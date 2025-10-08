@@ -1,0 +1,62 @@
+[
+  {
+    "id": "test-task-1",
+    "title": "Setup Development Environment",
+    "description": "Configure local development environment for the new project",
+    "assignedTo": "user1",
+    "dueDate": "2025-10-15",
+    "status": "In Progress",
+    "priority": "High",
+    "userId": "admin",
+    "createdAt": "2025-10-08T10:00:00.000Z",
+    "completedAt": null
+  },
+  {
+    "id": "test-task-2",
+    "title": "Review User Documentation",
+    "description": "Go through all user documentation and provide feedback",
+    "assignedTo": "user1",
+    "dueDate": "No Date",
+    "status": "To Do",
+    "priority": "Medium",
+    "userId": "admin",
+    "createdAt": "2025-10-08T11:00:00.000Z",
+    "completedAt": null
+  },
+  {
+    "id": "test-task-3",
+    "title": "Database Migration Complete",
+    "description": "Successfully migrated all legacy data to new system",
+    "assignedTo": "admin",
+    "dueDate": "2025-10-01",
+    "status": "Completed",
+    "priority": "High",
+    "userId": "admin",
+    "createdAt": "2025-09-28T09:00:00.000Z",
+    "completedAt": "2025-10-01T14:30:00.000Z"
+  },
+  {
+    "id": "test-task-4",
+    "title": "Weekly Team Meeting",
+    "description": "Discuss project progress and next week's goals",
+    "assignedTo": "admin",
+    "dueDate": "2025-10-11",
+    "status": "To Do",
+    "priority": "Low",
+    "userId": "user1",
+    "createdAt": "2025-10-07T19:18:29.958Z",
+    "completedAt": null
+  },
+  {
+    "id": "mghsxucc2yvyoz4qmx4",
+    "title": "Team Demo",
+    "description": "Give a demo to the team.",
+    "assignedTo": "user1",
+    "dueDate": "2025-10-08",
+    "status": "To Do",
+    "priority": "Medium",
+    "userId": "admin",
+    "createdAt": "2025-10-08T09:44:20.700Z",
+    "completedAt": null
+  }
+]
