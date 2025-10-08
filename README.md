@@ -559,6 +559,10 @@ Common issues and solutions:
 - Verify `users.json` file exists and is valid JSON
 - Ensure server is running on correct port
 
+---
+Edited by Divyanshu Kant
+
+
 **Tasks not loading:**
 - Check `tasks.json` file permissions and validity
 - Verify API endpoints are responding (`http://localhost:3000/api/tasks`)
