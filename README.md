@@ -43,15 +43,15 @@ A JDBC MySQL-based task management system with functionality similar to Trello. 
 ## Project Structure
 
 ```
-trello-task-manager/
+WorkSphere/
 ├── src/
 │   ├── main/
 │   │   ├── java/
 │   │   │   └── com/
-│   │   │       └── trello/
-│   │   │           ├── TrelloTaskManagerApp.java     # Main application
+│   │   │       └── worksphere/
+│   │   │           ├── WorkSphereApp.java            # Main application
 │   │   │           ├── cli/
-│   │   │           │   └── TrelloTaskManagerCLI.java # Command-line interface
+│   │   │           │   └── WorkSphereCLI.java        # Command-line interface
 │   │   │           ├── dao/
 │   │   │           │   ├── TaskDAO.java              # Task data access
 │   │   │           │   └── UserDAO.java              # User data access
@@ -71,7 +71,7 @@ trello-task-manager/
 │   └── test/
 │       └── java/
 │           └── com/
-│               └── trello/                           # Test classes
+│               └── worksphere/                        # Test classes
 ├── pom.xml                                           # Maven configuration
 └── README.md                                         # This file
 ```
@@ -119,7 +119,7 @@ trello-task-manager/
    Edit `src/main/resources/application.properties`:
    ```properties
    # Update these with your MySQL settings
-   db.url=jdbc:mysql://localhost:3306/trello_task_manager?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+   db.url=jdbc:mysql://localhost:3306/worksphere_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
    db.username=root
    db.password=your_mysql_password
    ```
@@ -130,7 +130,7 @@ trello-task-manager/
 
 2. **Navigate to project directory**:
    ```bash
-   cd trello-task-manager
+   cd WorkSphere
    ```
 
 3. **Build the project**:
