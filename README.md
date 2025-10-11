@@ -1,4 +1,4 @@
-# Trello Task Manager
+# Task Manager
 
 A JDBC MySQL-based task management system with functionality similar to Trello. Users can manage tasks with priorities, due dates, assignments, and track their progress through different statuses.
 
