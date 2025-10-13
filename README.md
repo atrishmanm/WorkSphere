@@ -411,15 +411,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### Contact
 
-- **GitHub**: [@atrishmanm](https://github.com/atrishmanm) ,[@arnav182006](https://github.com/arnav182006)
-- **Repository**: [WorkSphere](https://github.com/atrishmanm/WorkSphere) ,[WorkSphere](https://github.com/arnav182006/WorkSphere.git)
+- **GitHub**: [@atrishmanm](https://github.com/atrishmanm) ,[@arnav182006](https://github.com/arnav182006),[Divyanshu Kant](https://github.com/Astern-ops)
+- **Repository**: [WorkSphere](https://github.com/atrishmanm/WorkSphere)
 
 
 ---
 
 <div align="center">
 
-**Built with ❤️ by [Atrishman Mukherjee](https://github.com/atrishmanm) ,[Arnav Gupta](https://github.com/arnav182006)**
+**Built with ❤️ by [Atrishman Mukherjee](https://github.com/atrishmanm),[Arnav Gupta](https://github.com/arnav182006),[Divyanshu Kant](https://github.com/Astern-ops)**
 
 ⭐ **Star this repository if you find it helpful!** ⭐
 
