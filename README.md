@@ -411,14 +411,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### Contact
 
-- **GitHub**: [@atrishmanm](https://github.com/atrishmanm)
+- **GitHub**: [@atrishmanm](https://github.com/atrishmanm) ,[@arnav182006](https://github.com/arnav182006)
 - **Repository**: [WorkSphere](https://github.com/atrishmanm/WorkSphere)
 
 ---
 
 <div align="center">
 
-**Built with ❤️ by [Atrishman Mukherjee](https://github.com/atrishmanm)**
+**Built with ❤️ by [Atrishman Mukherjee](https://github.com/atrishmanm) ,[Arnav Gupta](https://github.com/arnav182006)**
 
 ⭐ **Star this repository if you find it helpful!** ⭐
 
