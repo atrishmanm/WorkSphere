@@ -1,13 +1,15 @@
-# 📋 WorkSphere - Task Management System
+
+# WorkSphere - Task Management System
 
 <div align="center">
 
 ![Java](https://img.shields.io/badge/Java-11+-orange?style=for-the-badge&logo=java)
-![MySQL](https://img.shields.io/badge/MySQL-8.0+-blue?style=for-the-badge&logo=mysql)
+![SQLite](https://img.shields.io/badge/SQLite-3.44+-blue?style=for-the-badge&logo=sqlite)
 ![Maven](https://img.shields.io/badge/Maven-3.6+-red?style=for-the-badge&logo=apache-maven)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-**A powerful JDBC MySQL-based task management system with Trello-like functionality**
+
+**A powerful Java & SQLite-based task management system**
 
 *Organize your tasks • Track progress • Boost productivity*
 
@@ -19,13 +21,14 @@
 
 ## 🎯 Overview
 
-WorkSphere is a comprehensive task management application built with Java and MySQL that provides Trello-like functionality through an intuitive command-line interface. Users can create, organize, and track tasks with priorities, due dates, assignments, and status updates.
+
+WorkSphere is a comprehensive task management application built with Java and SQLite that provides an intuitive GUI and command-line interface. Users can create, organize, and track tasks with priorities, due dates, assignments, and status updates.
 
 ### 🌟 Why WorkSphere?
 
 - **Simple yet powerful** - Clean CLI interface with rich functionality
 - **Multi-user support** - Built-in user management and authentication
-- **Database-driven** - Reliable MySQL backend with proper schema design
+- **Database-driven** - Reliable SQLite backend, zero setup required
 - **Production-ready** - Comprehensive error handling and data validation
 - **Extensible** - Clean architecture ready for web UI integration
 
@@ -62,7 +65,7 @@ WorkSphere is a comprehensive task management application built with Java and My
 ## 💻 Technology Stack
 
 - **Java 11** - Core programming language
-- **MySQL 8.0+** - Database for data persistence
+- **SQLite 3.44+** - Embedded database for data persistence
 - **JDBC** - Database connectivity
 - **Maven** - Build and dependency management
 - **JUnit 5** - Unit testing framework
@@ -142,63 +145,30 @@ git clone https://github.com/atrishmanm/WorkSphere.git
 cd WorkSphere
 ```
 
+
 ### Step 2: Database Setup
 
-1. **Start MySQL service**
-   ```bash
-   # On Windows
-   net start mysql
-   
-   # On macOS/Linux
-   sudo systemctl start mysql
-   ```
+No setup required! SQLite is embedded and the database file will be created automatically on first run.
 
-2. **Create the database and tables**
-   ```bash
-   mysql -u root -p < src/main/resources/schema.sql
-   ```
-   
-   Or manually run the SQL commands:
-   ```sql
-   CREATE DATABASE worksphere_db;
-   USE worksphere_db;
-   -- Run the contents of schema.sql
-   ```
+**Optional:** You can inspect or reset the database by deleting the `.db` file in your project directory.
 
-3. **Configure database connection**
-   
-   Edit `src/main/resources/application.properties`:
-   ```properties
-   # Database Configuration
-   db.url=jdbc:mysql://localhost:3306/worksphere_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-   db.username=root
-   db.password=your_mysql_password_here
-   ```
 
 ### Step 3: Build and Run
 
+
 1. **Build the project**
    ```bash
-   mvn clean compile
+   mvn clean package
    ```
 
-2. **Run the application**
+2. **Run the application (GUI)**
    ```bash
-   mvn exec:java
+   java -jar target/worksphere-1.0.0.jar gui
    ```
-   
-   **Alternative methods:**
+
+   **Or run CLI mode:**
    ```bash
-   # Build JAR and run
-   mvn clean package
-   java -jar target/worksphere-1.0.0.jar
-   
-   # Or use the convenience scripts
-   # Windows
-   run.bat
-   
-   # PowerShell
-   .\run.ps1
+   java -jar target/worksphere-1.0.0.jar cli
    ```
 
 ### Step 4: First Run Setup
@@ -207,7 +177,8 @@ cd WorkSphere
 2. **User creation** - Create your first user account
 3. **Sample data** - The database includes demo users and tasks to get started
 
-> **💡 Tip:** Use username `admin` to access pre-loaded sample data
+
+> **Tip:** Use username `admin` and password `admin123` to access pre-loaded sample data
 
 ## 📖 Usage Guide
 
@@ -248,26 +219,25 @@ Main Menu → Create new task
 - **Assign Task**: Assign/reassign task to users
 - **Delete Task**: Remove task (with confirmation)
 
-### 🔄 Task Status Workflow
-```
-📝 To-Do → 🔄 In Progress → ✅ Completed
-```
 
-### 🎯 Priority Levels
-- 🟢 **Low**: Nice to have
-- 🟡 **Medium**: Normal priority (default)
-- 🟠 **High**: Important
-- 🔴 **Urgent**: Critical/time-sensitive
+### Task Status Workflow
+To-Do → In Progress → Completed
+
+### Priority Levels
+- Low: Nice to have
+- Medium: Normal priority (default)
+- High: Important
+- Urgent: Critical/time-sensitive
 
 ### 👥 Sample Data
 
 The database includes demo accounts for testing:
 
-**Users:**
-- `admin` - System Administrator
-- `john_doe` - John Doe  
-- `jane_smith` - Jane Smith
-- `mike_wilson` - Mike Wilson
+**Users (username / password):**
+- `admin` / `admin123` - System Administrator
+- `john_doe` / `john123` - John Doe  
+- `jane_smith` / `jane123` - Jane Smith
+- `mike_wilson` / `mike123` - Mike Wilson
 
 **Tasks:**
 - Various tasks with different priorities and statuses
@@ -308,30 +278,14 @@ The application includes comprehensive error handling:
 
 ### Common Issues
 
-**Database Connection Failed**
-```bash
-# Check MySQL service status
-# Windows
-net start mysql
-
-# macOS/Linux  
-sudo systemctl status mysql
-```
 
 **Build Failures**
 ```bash
 # Clean and rebuild
-mvn clean compile
+mvn clean package
 
 # Check Java version
 java -version  # Should be 11+
-```
-
-**Permission Errors**
-```bash
-# Ensure proper MySQL permissions
-GRANT ALL PRIVILEGES ON worksphere_db.* TO 'root'@'localhost';
-FLUSH PRIVILEGES;
 ```
 
 ## 🔮 Future Enhancements
@@ -403,11 +357,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Documentation improvements
 
 **Quick Checklist for Issues:**
-1. ✅ Database connection configured correctly
-2. ✅ MySQL service running
-3. ✅ Java 11+ installed
-4. ✅ Maven 3.6+ installed
-5. ✅ Check application logs for detailed errors
+1. ✅ Java 11+ installed
+2. ✅ Maven 3.6+ installed
+3. ✅ Check application logs for detailed errors
 
 ### Contact
 

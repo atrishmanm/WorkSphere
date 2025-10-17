@@ -33,7 +33,7 @@ public class UserService {
      * @throws SQLException if database operation fails
      */
     public User createUser(String username, String email, String fullName) throws SQLException {
-        return createUser(username, email, fullName, false);
+        return createUser(username, "password", email, fullName, false);
     }
     
     /**
@@ -47,8 +47,32 @@ public class UserService {
      * @throws SQLException if database operation fails
      */
     public User createUser(String username, String email, String fullName, boolean isAdmin) throws SQLException {
+        return createUser(username, "password", email, fullName, isAdmin);
+    }
+    
+    /**
+     * Create a new user with password, validation and role specification
+     * @param username Username
+     * @param password Password
+     * @param email Email address (can be null)
+     * @param fullName Full name
+     * @param isAdmin Whether the user should be an admin
+     * @return Created user
+     * @throws IllegalArgumentException if validation fails
+     * @throws SQLException if database operation fails
+     */
+    public User createUser(String username, String password, String email, String fullName, boolean isAdmin) throws SQLException {
         // Validate input (allow null email)
         validateUserInput(username, email, fullName, true);
+        
+        // Validate password
+        if (password == null || password.trim().isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be empty");
+        }
+        
+        if (password.length() < 4) {
+            throw new IllegalArgumentException("Password must be at least 4 characters long");
+        }
         
         // Check for duplicates
         if (userDAO.usernameExists(username)) {
@@ -59,7 +83,12 @@ public class UserService {
             throw new IllegalArgumentException("Email '" + email + "' already exists");
         }
         
-        User user = new User(username, email, fullName, isAdmin);
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setEmail(email);
+        user.setFullName(fullName);
+        user.setAdmin(isAdmin);
         return userDAO.createUser(user);
     }
     

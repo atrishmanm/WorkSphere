@@ -66,17 +66,21 @@ public class AnalyticsService {
             metrics.averageCompletionDays = avgDays;
         }
         
-        // Time tracking metrics
-        metrics.totalTimeSpent = filteredTasks.stream()
+        // Time tracking metrics - only count tasks with actual time recorded
+        List<Task> tasksWithActualTime = filteredTasks.stream()
+            .filter(task -> task.getActualMinutes() > 0)
+            .collect(java.util.stream.Collectors.toList());
+        
+        metrics.totalTimeSpent = tasksWithActualTime.stream()
             .mapToInt(Task::getActualMinutes)
             .sum();
         
-        metrics.totalEstimatedTime = filteredTasks.stream()
+        metrics.totalEstimatedTime = tasksWithActualTime.stream()
             .mapToInt(Task::getEstimatedMinutes)
             .sum();
         
-        // Time efficiency
-        if (metrics.totalEstimatedTime > 0) {
+        // Time efficiency (only if we have actual time data)
+        if (metrics.totalTimeSpent > 0 && metrics.totalEstimatedTime > 0) {
             metrics.timeEfficiency = (double) metrics.totalEstimatedTime / metrics.totalTimeSpent;
         }
         

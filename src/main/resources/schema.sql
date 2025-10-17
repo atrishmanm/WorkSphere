@@ -8,6 +8,7 @@ PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL DEFAULT 'password',
     email TEXT UNIQUE NOT NULL,
     full_name TEXT NOT NULL,
     is_admin BOOLEAN DEFAULT 0,
@@ -75,6 +76,32 @@ CREATE TABLE IF NOT EXISTS time_logs (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- Subtasks table for checklist items within tasks
+CREATE TABLE IF NOT EXISTS subtasks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    task_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    completed BOOLEAN DEFAULT 0,
+    order_index INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    completed_at DATETIME,
+    FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
+);
+
+-- Task history table for tracking all changes
+CREATE TABLE IF NOT EXISTS task_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    task_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    action TEXT NOT NULL,
+    field_changed TEXT,
+    old_value TEXT,
+    new_value TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status);
 CREATE INDEX IF NOT EXISTS idx_tasks_priority ON tasks(priority);
@@ -89,6 +116,11 @@ CREATE INDEX IF NOT EXISTS idx_task_tags_tag_name ON task_tags(tag_name);
 CREATE INDEX IF NOT EXISTS idx_time_logs_task_id ON time_logs(task_id);
 CREATE INDEX IF NOT EXISTS idx_time_logs_user_id ON time_logs(user_id);
 CREATE INDEX IF NOT EXISTS idx_time_logs_start_time ON time_logs(start_time);
+CREATE INDEX IF NOT EXISTS idx_subtasks_task_id ON subtasks(task_id);
+CREATE INDEX IF NOT EXISTS idx_subtasks_completed ON subtasks(completed);
+CREATE INDEX IF NOT EXISTS idx_task_history_task_id ON task_history(task_id);
+CREATE INDEX IF NOT EXISTS idx_task_history_user_id ON task_history(user_id);
+CREATE INDEX IF NOT EXISTS idx_task_history_timestamp ON task_history(timestamp);
 
 -- Insert default categories
 INSERT OR IGNORE INTO categories (name, description, color) VALUES 

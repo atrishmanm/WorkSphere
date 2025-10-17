@@ -19,6 +19,8 @@ public class CreateUserDialog extends JDialog {
     private boolean isAdminCreating;
     
     private JTextField usernameField;
+    private JPasswordField passwordField;
+    private JPasswordField confirmPasswordField;
     private JTextField nameField;
     private JTextField emailField;
     private JCheckBox isAdminCheckbox;
@@ -40,11 +42,11 @@ public class CreateUserDialog extends JDialog {
     }
     
     private void initializeDialog() {
-        setSize(550, 500);  // Increased both width and height
+        setSize(550, 600);  // Increased height for password fields
         setLocationRelativeTo(getParent());
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setResizable(true);  // Make it resizable so user can adjust if needed
-        setMinimumSize(new Dimension(500, 450));  // Set minimum size
+        setMinimumSize(new Dimension(500, 550));  // Set minimum size
     }
     
     private void setupLayout() {
@@ -55,7 +57,7 @@ public class CreateUserDialog extends JDialog {
         headerPanel.setBackground(new Color(60, 160, 60));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
         
-        JLabel titleLabel = new JLabel("👤 Create New User");
+        JLabel titleLabel = new JLabel("Create New User");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
         titleLabel.setForeground(Color.WHITE);
         
@@ -74,6 +76,22 @@ public class CreateUserDialog extends JDialog {
         usernameField = new JTextField();
         usernameField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
         usernameField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        // Password field
+        JLabel passwordLabel = new JLabel("Password (required):");
+        passwordLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        passwordField = new JPasswordField();
+        passwordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
+        passwordField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        // Confirm password field
+        JLabel confirmPasswordLabel = new JLabel("Confirm Password (required):");
+        confirmPasswordLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        confirmPasswordField = new JPasswordField();
+        confirmPasswordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
+        confirmPasswordField.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         // Name field
         JLabel nameLabel = new JLabel("Full Name (required):");
@@ -100,6 +118,16 @@ public class CreateUserDialog extends JDialog {
         formPanel.add(usernameLabel);
         formPanel.add(Box.createVerticalStrut(5));
         formPanel.add(usernameField);
+        formPanel.add(Box.createVerticalStrut(15));
+        
+        formPanel.add(passwordLabel);
+        formPanel.add(Box.createVerticalStrut(5));
+        formPanel.add(passwordField);
+        formPanel.add(Box.createVerticalStrut(15));
+        
+        formPanel.add(confirmPasswordLabel);
+        formPanel.add(Box.createVerticalStrut(5));
+        formPanel.add(confirmPasswordField);
         formPanel.add(Box.createVerticalStrut(15));
         
         formPanel.add(nameLabel);
@@ -156,6 +184,8 @@ public class CreateUserDialog extends JDialog {
     
     private void createUser() {
         String username = usernameField.getText().trim();
+        String password = new String(passwordField.getPassword());
+        String confirmPassword = new String(confirmPasswordField.getPassword());
         String name = nameField.getText().trim();
         String email = emailField.getText().trim();
         
@@ -166,6 +196,33 @@ public class CreateUserDialog extends JDialog {
                 "Validation Error",
                 JOptionPane.WARNING_MESSAGE);
             usernameField.requestFocus();
+            return;
+        }
+        
+        if (password.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                "Password is required",
+                "Validation Error",
+                JOptionPane.WARNING_MESSAGE);
+            passwordField.requestFocus();
+            return;
+        }
+        
+        if (password.length() < 4) {
+            JOptionPane.showMessageDialog(this,
+                "Password must be at least 4 characters long",
+                "Validation Error",
+                JOptionPane.WARNING_MESSAGE);
+            passwordField.requestFocus();
+            return;
+        }
+        
+        if (!password.equals(confirmPassword)) {
+            JOptionPane.showMessageDialog(this,
+                "Passwords do not match",
+                "Validation Error",
+                JOptionPane.WARNING_MESSAGE);
+            confirmPasswordField.requestFocus();
             return;
         }
         
@@ -208,7 +265,7 @@ public class CreateUserDialog extends JDialog {
             // Determine if user should be admin (only if admin is creating and checkbox is selected)
             boolean isAdmin = isAdminCreating && isAdminCheckbox.isSelected();
             
-            createdUser = userService.createUser(username, name, email, isAdmin);
+            createdUser = userService.createUser(username, password, email, name, isAdmin);
             userCreated = true;
             dispose();
             

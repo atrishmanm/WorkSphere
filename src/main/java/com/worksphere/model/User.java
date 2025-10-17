@@ -9,6 +9,7 @@ import java.util.Objects;
 public class User {
     private int id;
     private String username;
+    private String password;
     private String email;
     private String fullName;
     private boolean isAdmin;
@@ -21,6 +22,7 @@ public class User {
     // Constructor with all fields except timestamps
     public User(String username, String email, String fullName) {
         this.username = username;
+        this.password = "password"; // Default password
         this.email = email;
         this.fullName = fullName;
         this.isAdmin = false; // Default to regular user
@@ -29,16 +31,18 @@ public class User {
     // Constructor with all fields except timestamps including admin role
     public User(String username, String email, String fullName, boolean isAdmin) {
         this.username = username;
+        this.password = "password"; // Default password
         this.email = email;
         this.fullName = fullName;
         this.isAdmin = isAdmin;
     }
     
     // Constructor with all fields
-    public User(int id, String username, String email, String fullName, 
+    public User(int id, String username, String password, String email, String fullName, 
                 boolean isAdmin, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.username = username;
+        this.password = password;
         this.email = email;
         this.fullName = fullName;
         this.isAdmin = isAdmin;
@@ -61,6 +65,14 @@ public class User {
     
     public void setUsername(String username) {
         this.username = username;
+    }
+    
+    public String getPassword() {
+        return password;
+    }
+    
+    public void setPassword(String password) {
+        this.password = password;
     }
     
     public String getEmail() {

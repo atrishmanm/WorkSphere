@@ -54,7 +54,7 @@ public class UserDetailsDialog extends JDialog {
         headerPanel.setBackground(new Color(70, 130, 180));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
         
-        JLabel titleLabel = new JLabel("👤 User Details");
+        JLabel titleLabel = new JLabel("User Details");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         titleLabel.setForeground(Color.WHITE);
         
@@ -80,6 +80,19 @@ public class UserDetailsDialog extends JDialog {
         
         // Email field
         formPanel.add(createFieldSection("Email:", createEmailField()));
+        formPanel.add(Box.createVerticalStrut(20));
+        
+        // Change Password button
+        JPanel passwordPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        passwordPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JButton changePasswordBtn = new JButton("Change Password");
+        changePasswordBtn.setPreferredSize(new Dimension(160, 35));
+        changePasswordBtn.setBackground(new Color(70, 130, 180));
+        changePasswordBtn.setForeground(Color.WHITE);
+        changePasswordBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+        changePasswordBtn.addActionListener(e -> showChangePasswordDialog());
+        passwordPanel.add(changePasswordBtn);
+        formPanel.add(passwordPanel);
         formPanel.add(Box.createVerticalStrut(20));
         
         // Created date (read-only)
@@ -278,6 +291,131 @@ public class UserDetailsDialog extends JDialog {
                 "Update Error",
                 JOptionPane.ERROR_MESSAGE);
         }
+    }
+    
+    private void showChangePasswordDialog() {
+        JDialog passwordDialog = new JDialog(this, "Change Password", true);
+        passwordDialog.setSize(400, 280);
+        passwordDialog.setLocationRelativeTo(this);
+        passwordDialog.setLayout(new BorderLayout());
+        
+        // Form panel
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+        
+        // Current password
+        JLabel currentPwdLabel = new JLabel("Current Password:");
+        currentPwdLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JPasswordField currentPwdField = new JPasswordField();
+        currentPwdField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        currentPwdField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        formPanel.add(currentPwdLabel);
+        formPanel.add(Box.createVerticalStrut(5));
+        formPanel.add(currentPwdField);
+        formPanel.add(Box.createVerticalStrut(15));
+        
+        // New password
+        JLabel newPwdLabel = new JLabel("New Password:");
+        newPwdLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JPasswordField newPwdField = new JPasswordField();
+        newPwdField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        newPwdField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        formPanel.add(newPwdLabel);
+        formPanel.add(Box.createVerticalStrut(5));
+        formPanel.add(newPwdField);
+        formPanel.add(Box.createVerticalStrut(15));
+        
+        // Confirm password
+        JLabel confirmPwdLabel = new JLabel("Confirm New Password:");
+        confirmPwdLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JPasswordField confirmPwdField = new JPasswordField();
+        confirmPwdField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        confirmPwdField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        formPanel.add(confirmPwdLabel);
+        formPanel.add(Box.createVerticalStrut(5));
+        formPanel.add(confirmPwdField);
+        
+        passwordDialog.add(formPanel, BorderLayout.CENTER);
+        
+        // Button panel
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        
+        JButton changeBtn = new JButton("Change");
+        changeBtn.setPreferredSize(new Dimension(100, 35));
+        changeBtn.setBackground(new Color(60, 160, 60));
+        changeBtn.setForeground(Color.WHITE);
+        changeBtn.addActionListener(e -> {
+            String currentPassword = new String(currentPwdField.getPassword());
+            String newPassword = new String(newPwdField.getPassword());
+            String confirmPassword = new String(confirmPwdField.getPassword());
+            
+            // Validate current password
+            if (!currentPassword.equals(user.getPassword())) {
+                JOptionPane.showMessageDialog(passwordDialog,
+                    "Current password is incorrect",
+                    "Authentication Error",
+                    JOptionPane.ERROR_MESSAGE);
+                currentPwdField.selectAll();
+                currentPwdField.requestFocus();
+                return;
+            }
+            
+            // Validate new password
+            if (newPassword.length() < 4) {
+                JOptionPane.showMessageDialog(passwordDialog,
+                    "New password must be at least 4 characters",
+                    "Validation Error",
+                    JOptionPane.WARNING_MESSAGE);
+                newPwdField.selectAll();
+                newPwdField.requestFocus();
+                return;
+            }
+            
+            // Validate password match
+            if (!newPassword.equals(confirmPassword)) {
+                JOptionPane.showMessageDialog(passwordDialog,
+                    "Passwords do not match",
+                    "Validation Error",
+                    JOptionPane.WARNING_MESSAGE);
+                confirmPwdField.selectAll();
+                confirmPwdField.requestFocus();
+                return;
+            }
+            
+            // Change password
+            try {
+                user.setPassword(newPassword);
+                userService.updateUser(user);
+                
+                JOptionPane.showMessageDialog(passwordDialog,
+                    "Password changed successfully!",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+                
+                passwordDialog.dispose();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(passwordDialog,
+                    "Error changing password: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        
+        JButton cancelBtn = new JButton("Cancel");
+        cancelBtn.setPreferredSize(new Dimension(100, 35));
+        cancelBtn.addActionListener(e -> passwordDialog.dispose());
+        
+        buttonPanel.add(changeBtn);
+        buttonPanel.add(cancelBtn);
+        
+        passwordDialog.add(buttonPanel, BorderLayout.SOUTH);
+        
+        SwingUtilities.invokeLater(() -> currentPwdField.requestFocus());
+        passwordDialog.setVisible(true);
     }
     
     public boolean isUserUpdated() {

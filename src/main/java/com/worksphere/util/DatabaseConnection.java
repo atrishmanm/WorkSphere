@@ -268,6 +268,29 @@ public class DatabaseConnection {
                 }
             }
             
+            // Migration 1.5: Add password column to users table if it doesn't exist
+            try {
+                stmt.execute("SELECT password FROM users LIMIT 1");
+                System.out.println("✅ password column already exists in users table");
+            } catch (SQLException e) {
+                if (e.getMessage().contains("no such column: password") || 
+                    e.getMessage().contains("table users has no column named password")) {
+                    
+                    System.out.println("🔄 Adding password column to users table...");
+                    stmt.execute("ALTER TABLE users ADD COLUMN password TEXT NOT NULL DEFAULT 'password'");
+                    
+                    // Set specific passwords for sample users
+                    stmt.execute("UPDATE users SET password = 'admin123' WHERE username = 'admin'");
+                    stmt.execute("UPDATE users SET password = 'john123' WHERE username = 'john_doe'");
+                    stmt.execute("UPDATE users SET password = 'jane123' WHERE username = 'jane_smith'");
+                    stmt.execute("UPDATE users SET password = 'mike123' WHERE username = 'mike_wilson'");
+                    
+                    System.out.println("✅ Successfully added password column and set passwords for sample users");
+                } else {
+                    throw e;
+                }
+            }
+            
             // Migration 2: Add enhanced task fields
             System.out.println("🔄 Checking and adding enhanced task fields...");
             
@@ -496,16 +519,24 @@ public class DatabaseConnection {
             System.out.println("🔄 Checking and inserting sample users...");
             
             // Insert admin user if not exists
-            stmt.execute("INSERT OR IGNORE INTO users (username, email, full_name, is_admin) VALUES " +
-                        "('admin', 'admin@trello.com', 'System Administrator', 1)");
+            stmt.execute("INSERT OR IGNORE INTO users (username, password, email, full_name, is_admin) VALUES " +
+                        "('admin', 'admin123', 'admin@trello.com', 'System Administrator', 1)");
             
             // Insert regular users if not exist
-            stmt.execute("INSERT OR IGNORE INTO users (username, email, full_name, is_admin) VALUES " +
-                        "('john_doe', 'john.doe@example.com', 'John Doe', 0)");
-            stmt.execute("INSERT OR IGNORE INTO users (username, email, full_name, is_admin) VALUES " +
-                        "('jane_smith', 'jane.smith@example.com', 'Jane Smith', 0)");
-            stmt.execute("INSERT OR IGNORE INTO users (username, email, full_name, is_admin) VALUES " +
-                        "('mike_wilson', 'mike.wilson@example.com', 'Mike Wilson', 0)");
+            stmt.execute("INSERT OR IGNORE INTO users (username, password, email, full_name, is_admin) VALUES " +
+                        "('john_doe', 'john123', 'john.doe@example.com', 'John Doe', 0)");
+            stmt.execute("INSERT OR IGNORE INTO users (username, password, email, full_name, is_admin) VALUES " +
+                        "('jane_smith', 'jane123', 'jane.smith@example.com', 'Jane Smith', 0)");
+            stmt.execute("INSERT OR IGNORE INTO users (username, password, email, full_name, is_admin) VALUES " +
+                        "('mike_wilson', 'mike123', 'mike.wilson@example.com', 'Mike Wilson', 0)");
+            
+            // Update passwords for existing users (in case they were created before password column)
+            stmt.execute("UPDATE users SET password = 'admin123' WHERE username = 'admin' AND password = 'password'");
+            stmt.execute("UPDATE users SET password = 'john123' WHERE username = 'john_doe' AND password = 'password'");
+            stmt.execute("UPDATE users SET password = 'jane123' WHERE username = 'jane_smith' AND password = 'password'");
+            stmt.execute("UPDATE users SET password = 'mike123' WHERE username = 'mike_wilson' AND password = 'password'");
+            
+            System.out.println("✅ Sample users verified with correct passwords");
             
             // Insert sample tasks (if needed) - Check if our specific sample tasks already exist
             System.out.println("🔍 Checking for existing sample tasks...");
@@ -546,10 +577,15 @@ public class DatabaseConnection {
             
             System.out.println("📊 Database status: " + totalTaskCount + " total tasks, " + sampleTaskCount + " sample tasks found");
             
-            // Only insert sample tasks if we have fewer than 5 sample tasks (to account for potential partial insertions)
-            System.out.println("🔍 Sample task check: sampleTaskCount = " + sampleTaskCount + ", condition: sampleTaskCount < 5 = " + (sampleTaskCount < 5));
-            if (sampleTaskCount < 5) {
-                System.out.println("🔄 Inserting 10 sample tasks...");
+            // DISABLED: Don't add sample tasks - we have real data for leaderboard testing
+            // Only insert sample tasks if we have fewer than 20 sample tasks
+            System.out.println("🔍 Sample task check: sampleTaskCount = " + sampleTaskCount + ", condition: sampleTaskCount < 20 = " + (sampleTaskCount < 20));
+            System.out.println("ℹ️  Sample task insertion DISABLED - using existing task data");
+            
+            // DISABLED SAMPLE TASK INSERTION - Start of commented out code
+            /*
+            if (sampleTaskCount < 20) {
+                System.out.println("🔄 Inserting 20 comprehensive sample tasks...");
                 
                 // First ensure we have enough users for the task assignments
                 ResultSet userCheck = stmt.executeQuery("SELECT COUNT(*) FROM users");
@@ -561,50 +597,83 @@ public class DatabaseConnection {
                 
                 if (userCount >= 4) {
                     try {
-                        System.out.println("💾 Starting task insertions...");
-                        // Insert only 10 sample tasks WITHOUT specifying IDs to let auto-increment work properly
-                        System.out.println("⚡ DIRECT SQL: Inserting Task 1 - Setup project environment");
-                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by) VALUES " +
-                                    "('Setup project environment', 'Configure development environment and install necessary tools', 'HIGH', 'COMPLETED', '2024-01-15', 2, 1)");
-                        System.out.println("  ✓ Task 1 inserted");
-                        System.out.println("⚡ DIRECT SQL: Inserting Task 2 - Design database schema");
-                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by) VALUES " +
-                                    "('Design database schema', 'Create ERD and implement database tables', 'HIGH', 'COMPLETED', '2024-01-20', 2, 1)");
-                        System.out.println("  ✓ Task 2 inserted");
-                        System.out.println("⚡ DIRECT SQL: Inserting Task 3 - Implement user authentication");
-                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by) VALUES " +
-                                    "('Implement user authentication', 'Build login and registration functionality', 'MEDIUM', 'IN_PROGRESS', '2024-02-01', 3, 1)");
-                        System.out.println("  ✓ Task 3 inserted");
-                        System.out.println("⚡ DIRECT SQL: Inserting Task 4 - Create task management UI");
-                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by) VALUES " +
-                                    "('Create task management UI', 'Design and implement user interface for task management', 'MEDIUM', 'TODO', '2024-02-15', 3, 1)");
-                        System.out.println("  ✓ Task 4 inserted");
-                        System.out.println("⚡ DIRECT SQL: Inserting Task 5 - Write unit tests");
-                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by) VALUES " +
-                                    "('Write unit tests', 'Implement comprehensive test suite', 'LOW', 'TODO', '2024-03-01', 4, 1)");
-                        System.out.println("  ✓ Task 5 inserted");
-                        System.out.println("⚡ DIRECT SQL: Inserting Task 6 - Deploy to production");
-                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by) VALUES " +
-                                    "('Deploy to production', 'Setup production environment and deploy application', 'URGENT', 'TODO', '2024-03-15', 2, 1)");
-                        System.out.println("  ✓ Task 6 inserted");
-                        System.out.println("⚡ DIRECT SQL: Inserting Task 7 - Code review process");
-                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by) VALUES " +
-                                    "('Code review process', 'Establish code review guidelines and implement peer review workflow', 'MEDIUM', 'TODO', '2024-02-10', 3, 1)");
-                        System.out.println("  ✓ Task 7 inserted");
-                        System.out.println("⚡ DIRECT SQL: Inserting Task 8 - Performance optimization");
-                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by) VALUES " +
-                                    "('Performance optimization', 'Analyze and optimize application performance bottlenecks', 'HIGH', 'TODO', '2024-02-28', 2, 1)");
-                        System.out.println("  ✓ Task 8 inserted");
-                        System.out.println("⚡ DIRECT SQL: Inserting Task 9 - Documentation update");
-                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by) VALUES " +
-                                    "('Documentation update', 'Update user manual and API documentation', 'LOW', 'TODO', '2024-03-10', 4, 1)");
-                        System.out.println("  ✓ Task 9 inserted");
-                        System.out.println("⚡ DIRECT SQL: Inserting Task 10 - Security audit");
-                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by) VALUES " +
-                                    "('Security audit', 'Conduct comprehensive security audit and fix vulnerabilities', 'URGENT', 'TODO', '2024-02-20', 2, 1)");
-                        System.out.println("  ✓ Task 10 inserted");
+                        System.out.println("💾 Starting task insertions - 20 diverse tasks optimized for analytics visualization...");
                         
-                        System.out.println("✅ 10 sample tasks inserted successfully!");
+                        // COMPLETED Tasks from different time periods (10 tasks)
+                        // January 2025 - Early project tasks
+                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by, completed_at, estimated_minutes, actual_minutes, created_at) VALUES " +
+                                    "('Setup project environment', 'Configure development environment and install necessary tools', 'HIGH', 'COMPLETED', '2025-01-15', 2, 1, '2025-01-14 16:30:00', 180, 210, '2025-01-10 09:00:00')");
+                        
+                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by, completed_at, estimated_minutes, actual_minutes, created_at) VALUES " +
+                                    "('Design database schema', 'Create ERD and implement database tables', 'URGENT', 'COMPLETED', '2025-01-20', 2, 1, '2025-01-19 14:20:00', 240, 280, '2025-01-11 10:30:00')");
+                        
+                        // February 2025 - Development phase
+                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by, completed_at, estimated_minutes, actual_minutes, created_at) VALUES " +
+                                    "('Implement REST API', 'Build RESTful API endpoints for all resources', 'HIGH', 'COMPLETED', '2025-02-10', 3, 1, '2025-02-09 18:45:00', 600, 720, '2025-02-01 08:00:00')");
+                        
+                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by, completed_at, estimated_minutes, actual_minutes, created_at) VALUES " +
+                                    "('Write unit tests', 'Implement comprehensive test suite for core functionality', 'MEDIUM', 'COMPLETED', '2025-02-20', 4, 1, '2025-02-18 11:30:00', 360, 420, '2025-02-05 09:15:00')");
+                        
+                        // March 2025 - Testing and refinement
+                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by, completed_at, estimated_minutes, actual_minutes, created_at) VALUES " +
+                                    "('Security audit', 'Conduct comprehensive security audit and fix vulnerabilities', 'URGENT', 'COMPLETED', '2025-03-05', 2, 1, '2025-03-04 17:15:00', 480, 540, '2025-02-25 10:00:00')");
+                        
+                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by, completed_at, estimated_minutes, actual_minutes, created_at) VALUES " +
+                                    "('Performance optimization', 'Optimize database queries and improve response times', 'HIGH', 'COMPLETED', '2025-03-15', 2, 1, '2025-03-14 19:30:00', 300, 285, '2025-03-01 11:20:00')");
+                        
+                        // September 2025 - Recent completed tasks
+                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by, completed_at, estimated_minutes, actual_minutes, created_at) VALUES " +
+                                    "('API documentation', 'Complete REST API documentation with examples', 'MEDIUM', 'COMPLETED', '2025-09-15', 4, 1, '2025-09-14 15:00:00', 240, 255, '2025-09-01 09:00:00')");
+                        
+                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by, completed_at, estimated_minutes, actual_minutes, created_at) VALUES " +
+                                    "('User feedback analysis', 'Analyze user feedback and create improvement roadmap', 'LOW', 'COMPLETED', '2025-09-25', 3, 1, '2025-09-23 13:45:00', 180, 150, '2025-09-10 14:30:00')");
+                        
+                        // October 2025 - Very recent completions
+                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by, completed_at, estimated_minutes, actual_minutes, created_at) VALUES " +
+                                    "('Database backup system', 'Implement automated backup with recovery testing', 'HIGH', 'COMPLETED', '2025-10-05', 2, 1, '2025-10-04 16:20:00', 240, 270, '2025-09-28 10:00:00')");
+                        
+                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by, completed_at, estimated_minutes, actual_minutes, created_at) VALUES " +
+                                    "('Code review guidelines', 'Document code review process and best practices', 'MEDIUM', 'COMPLETED', '2025-10-12', 3, 1, '2025-10-11 11:30:00', 120, 135, '2025-10-01 09:30:00')");
+                        
+                        // IN_PROGRESS Tasks - Current work (6 tasks)
+                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by, estimated_minutes, actual_minutes, created_at) VALUES " +
+                                    "('Implement user authentication', 'Build login, registration, and password reset functionality', 'URGENT', 'IN_PROGRESS', '2025-10-20', 3, 1, 480, 320, '2025-10-08 08:00:00')");
+                        
+                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by, estimated_minutes, actual_minutes, created_at) VALUES " +
+                                    "('Mobile responsive design', 'Make UI responsive for mobile and tablet devices', 'HIGH', 'IN_PROGRESS', '2025-10-25', 3, 1, 540, 360, '2025-10-10 09:00:00')");
+                        
+                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by, estimated_minutes, actual_minutes, created_at) VALUES " +
+                                    "('Email notification system', 'Implement email notifications for task updates', 'MEDIUM', 'IN_PROGRESS', '2025-10-28', 4, 1, 360, 180, '2025-10-12 10:00:00')");
+                        
+                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by, estimated_minutes, actual_minutes, created_at) VALUES " +
+                                    "('Integration testing', 'Write integration tests for API endpoints', 'MEDIUM', 'IN_PROGRESS', '2025-11-01', 4, 1, 300, 150, '2025-10-14 11:00:00')");
+                        
+                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by, estimated_minutes, actual_minutes, created_at) VALUES " +
+                                    "('Analytics dashboard improvements', 'Add more charts and export features', 'LOW', 'IN_PROGRESS', '2025-11-05', 3, 1, 480, 240, '2025-10-15 14:00:00')");
+                        
+                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by, estimated_minutes, actual_minutes, created_at) VALUES " +
+                                    "('Search functionality', 'Implement advanced search with filters', 'MEDIUM', 'IN_PROGRESS', '2025-11-08', 2, 1, 240, 120, '2025-10-16 09:30:00')");
+                        
+                        // TODO Tasks - Upcoming work (4 tasks)
+                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by, estimated_minutes, actual_minutes, created_at) VALUES " +
+                                    "('Deploy to production', 'Setup production environment and deploy application', 'URGENT', 'TODO', '2025-10-30', 2, 1, 240, 0, '2025-10-15 10:00:00')");
+                        
+                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by, estimated_minutes, actual_minutes, created_at) VALUES " +
+                                    "('Load testing', 'Perform load testing and stress testing with 1000 concurrent users', 'HIGH', 'TODO', '2025-11-10', 2, 1, 360, 0, '2025-10-16 11:00:00')");
+                        
+                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by, estimated_minutes, actual_minutes, created_at) VALUES " +
+                                    "('User training materials', 'Create video tutorials and comprehensive user guides', 'LOW', 'TODO', '2025-11-15', 4, 1, 420, 0, '2025-10-16 13:00:00')");
+                        
+                        stmt.execute("INSERT INTO tasks (title, description, priority, status, due_date, assigned_to, created_by, estimated_minutes, actual_minutes, created_at) VALUES " +
+                                    "('Social media integration', 'Add social login (Google, GitHub) and sharing features', 'LOW', 'TODO', '2025-11-25', 3, 1, 360, 0, '2025-10-17 09:00:00')");
+                        
+                        System.out.println("✅ 20 diverse sample tasks inserted for comprehensive analytics!");
+                        System.out.println("   - 10 COMPLETED tasks (across Jan-Oct 2025 for trend analysis)");
+                        System.out.println("   - 6 IN_PROGRESS tasks (varying completion percentages)");
+                        System.out.println("   - 4 TODO tasks (upcoming work)");
+                        System.out.println("   - Priority distribution: 3 URGENT, 4 HIGH, 8 MEDIUM, 5 LOW");
+                        System.out.println("   - Time variance: Some under estimate, some over estimate");
+                        System.out.println("   - Multiple assignees: Distributed across all 4 users");
                     } catch (SQLException taskError) {
                         System.err.println("⚠️  Warning: Could not insert sample tasks due to foreign key constraints. Users may not exist yet.");
                         System.err.println("Error details: " + taskError.getMessage());
@@ -615,9 +684,11 @@ public class DatabaseConnection {
             } else {
                 System.out.println("ℹ️  Sample tasks already exist (" + sampleTaskCount + " found), skipping insertion.");
             }
+            */ // END DISABLED SAMPLE TASK INSERTION
             
             // Migration 7: Clean up tasks for demo (limit to 20 tasks)
-            System.out.println("🧹 Cleaning up tasks for demo presentation (limiting to 20 tasks)...");
+            // DISABLED: Keeping all tasks for leaderboard testing
+            // System.out.println("🧹 Cleaning up tasks for demo presentation (limiting to 20 tasks)...");
             
             // First, check current task count
             ResultSet taskCountRs = stmt.executeQuery("SELECT COUNT(*) FROM tasks");
@@ -627,8 +698,9 @@ public class DatabaseConnection {
             }
             taskCountRs.close();
             
-            System.out.println("📊 Current task count: " + currentTaskCount);
+            System.out.println("📊 Current task count: " + currentTaskCount + " (demo cleanup disabled)");
             
+            /* DISABLED: Don't delete tasks - we need them for leaderboard testing
             if (currentTaskCount > 20) {
                 System.out.println("🔄 Reducing tasks to 20 for demo purposes...");
                 
@@ -644,7 +716,15 @@ public class DatabaseConnection {
             } else {
                 System.out.println("ℹ️  Task count already appropriate for demo (" + currentTaskCount + " tasks)");
             }
+            */
             
+            /* DISABLED Migration 8: Enhance existing tasks with realistic sample data
+             * This migration is disabled because we now use TaskDataGenerator to create
+             * properly structured test data with realistic actualMinutes values.
+             * Keeping this migration active would overwrite the generated data.
+             */
+            System.out.println("🔧 Task enhancement migration DISABLED - using TaskDataGenerator instead");
+            /*
             // Migration 8: Enhance existing tasks with realistic sample data
             System.out.println("🔧 Enhancing existing tasks with realistic sample data...");
             
@@ -809,6 +889,69 @@ public class DatabaseConnection {
             
             System.out.println("✅ Enhanced tasks with realistic sample data for demo!");
             System.out.println("📊 Demo dataset ready: ~20 tasks with categories, time estimates, and tags");
+            */
+            System.out.println("ℹ️  Task enhancement migration DISABLED - using TaskDataGenerator for realistic data");
+            
+            // Migration 9: Create subtasks table if it doesn't exist
+            System.out.println("🔄 Checking and creating subtasks table...");
+            try {
+                stmt.execute("SELECT COUNT(*) FROM subtasks LIMIT 1");
+                System.out.println("✅ subtasks table already exists");
+            } catch (SQLException e) {
+                if (e.getMessage().contains("no such table: subtasks")) {
+                    System.out.println("🔄 Creating subtasks table...");
+                    stmt.execute("CREATE TABLE subtasks (" +
+                                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                                "task_id INTEGER NOT NULL, " +
+                                "title TEXT NOT NULL, " +
+                                "completed BOOLEAN DEFAULT 0, " +
+                                "order_index INTEGER DEFAULT 0, " +
+                                "created_at DATETIME DEFAULT CURRENT_TIMESTAMP, " +
+                                "completed_at DATETIME, " +
+                                "FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE" +
+                                ")");
+                    
+                    // Create index for better performance
+                    stmt.execute("CREATE INDEX IF NOT EXISTS idx_subtasks_task_id ON subtasks(task_id)");
+                    stmt.execute("CREATE INDEX IF NOT EXISTS idx_subtasks_completed ON subtasks(completed)");
+                    
+                    System.out.println("✅ subtasks table and indexes created");
+                } else {
+                    throw e;
+                }
+            }
+            
+            // Migration 10: Create task_history table if it doesn't exist
+            System.out.println("🔄 Checking and creating task_history table...");
+            try {
+                stmt.execute("SELECT COUNT(*) FROM task_history LIMIT 1");
+                System.out.println("✅ task_history table already exists");
+            } catch (SQLException e) {
+                if (e.getMessage().contains("no such table: task_history")) {
+                    System.out.println("🔄 Creating task_history table...");
+                    stmt.execute("CREATE TABLE task_history (" +
+                                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                                "task_id INTEGER NOT NULL, " +
+                                "user_id INTEGER NOT NULL, " +
+                                "action TEXT NOT NULL, " +
+                                "field_changed TEXT, " +
+                                "old_value TEXT, " +
+                                "new_value TEXT, " +
+                                "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, " +
+                                "FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE, " +
+                                "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE" +
+                                ")");
+                    
+                    // Create indexes for better performance
+                    stmt.execute("CREATE INDEX IF NOT EXISTS idx_task_history_task_id ON task_history(task_id)");
+                    stmt.execute("CREATE INDEX IF NOT EXISTS idx_task_history_user_id ON task_history(user_id)");
+                    stmt.execute("CREATE INDEX IF NOT EXISTS idx_task_history_timestamp ON task_history(timestamp)");
+                    
+                    System.out.println("✅ task_history table and indexes created");
+                } else {
+                    throw e;
+                }
+            }
             
             System.out.println("✅ Database migrations completed successfully!");
             

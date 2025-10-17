@@ -75,7 +75,7 @@ public class DashboardPanel extends JPanel {
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
         titleLabel.setForeground(new Color(52, 58, 64));
         
-        JButton refreshButton = new JButton("🔄 Refresh");
+        JButton refreshButton = new JButton("Refresh");
         refreshButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         refreshButton.setPreferredSize(new Dimension(120, 40));
         refreshButton.setBackground(new Color(0, 123, 255));
@@ -117,10 +117,10 @@ public class DashboardPanel extends JPanel {
         panel.setBackground(new Color(248, 249, 250));
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
         
-        panel.add(createStatCard("📋", "Total Tasks", totalTasksValue = new JLabel("0"), new Color(52, 144, 220)));
-        panel.add(createStatCard("✅", "Completed", completedValue = new JLabel("0"), new Color(40, 167, 69)));
-        panel.add(createStatCard("⏰", "This Week", thisWeekValue = new JLabel("0"), new Color(255, 193, 7)));
-        panel.add(createStatCard("⚠️", "Overdue", overdueValue = new JLabel("0"), new Color(220, 53, 69)));
+        panel.add(createStatCard("", "Total Tasks", totalTasksValue = new JLabel("0"), new Color(52, 144, 220)));
+        panel.add(createStatCard("", "Completed", completedValue = new JLabel("0"), new Color(40, 167, 69)));
+        panel.add(createStatCard("", "This Week", thisWeekValue = new JLabel("0"), new Color(255, 193, 7)));
+        panel.add(createStatCard("", "Overdue", overdueValue = new JLabel("0"), new Color(220, 53, 69)));
         
         return panel;
     }
@@ -138,15 +138,12 @@ public class DashboardPanel extends JPanel {
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
         
-        JLabel iconLabel = new JLabel(icon);
-        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 24));
-        
+        // Only show title (icon is empty string now)
         JLabel titleLabel = new JLabel(title);
         titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         titleLabel.setForeground(new Color(108, 117, 125));
         
-        topPanel.add(iconLabel, BorderLayout.WEST);
-        topPanel.add(titleLabel, BorderLayout.CENTER);
+        topPanel.add(titleLabel, BorderLayout.WEST);
         
         // Value
         valueLabel.setFont(new Font("Segoe UI", Font.BOLD, 32));

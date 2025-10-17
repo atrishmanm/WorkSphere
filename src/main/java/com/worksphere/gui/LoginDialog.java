@@ -22,6 +22,7 @@ public class LoginDialog extends JDialog {
     private boolean loginSuccessful = false;
     
     private JTextField usernameField;
+    private JPasswordField passwordField;
     private JButton loginButton;
     private JButton createUserButton;
     private JButton exitButton;
@@ -36,7 +37,7 @@ public class LoginDialog extends JDialog {
     }
     
     private void initializeDialog() {
-        setSize(400, 250);
+        setSize(400, 300);
         setLocationRelativeTo(getParent());
         setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         setResizable(false);
@@ -90,6 +91,14 @@ public class LoginDialog extends JDialog {
         usernameField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         usernameField.setAlignmentX(Component.LEFT_ALIGNMENT);
         
+        // Password section
+        JLabel passwordLabel = new JLabel("Password:");
+        passwordLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        passwordField = new JPasswordField();
+        passwordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        passwordField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
         // Buttons panel
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -111,6 +120,10 @@ public class LoginDialog extends JDialog {
         mainPanel.add(usernameLabel);
         mainPanel.add(Box.createVerticalStrut(5));
         mainPanel.add(usernameField);
+        mainPanel.add(Box.createVerticalStrut(15));
+        mainPanel.add(passwordLabel);
+        mainPanel.add(Box.createVerticalStrut(5));
+        mainPanel.add(passwordField);
         mainPanel.add(Box.createVerticalStrut(20));
         mainPanel.add(buttonPanel);
         
@@ -120,7 +133,7 @@ public class LoginDialog extends JDialog {
         JPanel infoPanel = new JPanel();
         infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         
-        JLabel infoLabel = new JLabel("<html><center>💡 Try username: <b>admin</b><br/>Or create a new user</center></html>");
+        JLabel infoLabel = new JLabel("<html><center>Tip: Try username: <b>admin</b> / password: <b>admin123</b><br/>Or create a new user</center></html>");
         infoLabel.setFont(new Font("Arial", Font.PLAIN, 11));
         infoLabel.setForeground(Color.GRAY);
         infoLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -154,8 +167,24 @@ public class LoginDialog extends JDialog {
             }
         });
         
-        // Enter key in username field
+        // Enter key in username field - moves to password field
         usernameField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    passwordField.requestFocus();
+                }
+            }
+            
+            @Override
+            public void keyTyped(KeyEvent e) {}
+            
+            @Override
+            public void keyReleased(KeyEvent e) {}
+        });
+        
+        // Enter key in password field - performs login
+        passwordField.addKeyListener(new KeyListener() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -176,6 +205,7 @@ public class LoginDialog extends JDialog {
     
     private void performLogin() {
         String username = usernameField.getText().trim();
+        String password = new String(passwordField.getPassword());
         
         if (username.isEmpty()) {
             JOptionPane.showMessageDialog(this,
@@ -185,12 +215,27 @@ public class LoginDialog extends JDialog {
             return;
         }
         
+        if (password.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                "Please enter a password",
+                "Login Error",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
         try {
             loggedInUser = userService.getUserByUsername(username);
             
-            if (loggedInUser != null) {
+            if (loggedInUser != null && loggedInUser.getPassword().equals(password)) {
                 loginSuccessful = true;
                 dispose();
+            } else if (loggedInUser != null) {
+                JOptionPane.showMessageDialog(this,
+                    "Incorrect password. Please try again.",
+                    "Login Failed",
+                    JOptionPane.ERROR_MESSAGE);
+                passwordField.setText("");
+                passwordField.requestFocus();
             } else {
                 JOptionPane.showMessageDialog(this,
                     "User '" + username + "' not found.\nPlease create a new user or try a different username.",

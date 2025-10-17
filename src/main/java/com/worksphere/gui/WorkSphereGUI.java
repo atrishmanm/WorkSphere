@@ -7,6 +7,7 @@ import com.worksphere.model.Task;
 import com.worksphere.model.User;
 import com.worksphere.service.TaskService;
 import com.worksphere.service.UserService;
+import com.worksphere.service.LeaderboardService;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,6 +33,8 @@ public class WorkSphereGUI extends JFrame {
     private KanbanBoardPanel kanbanBoardPanel;
     private PomodoroTimerPanel pomodoroTimerPanel;
     private AnalyticsDashboardPanel analyticsDashboardPanel;
+    private CalendarViewPanel calendarViewPanel;
+    private LeaderboardPanel leaderboardPanel;
     
     // Menu and toolbar
     private JMenuBar menuBar;
@@ -261,20 +264,31 @@ public class WorkSphereGUI extends JFrame {
         kanbanBoardPanel = new KanbanBoardPanel(taskService, userService, currentUser);
         pomodoroTimerPanel = new PomodoroTimerPanel();
         analyticsDashboardPanel = new AnalyticsDashboardPanel(currentUser);
+        calendarViewPanel = new CalendarViewPanel(taskService, userService, currentUser);
+        
+        // Create leaderboard service and panel
+        TaskDAO taskDAO = new TaskDAO();
+        UserDAO userDAO = new UserDAO();
+        LeaderboardService leaderboardService = new LeaderboardService(taskDAO, userDAO);
+        leaderboardPanel = new LeaderboardPanel(leaderboardService);
         
         // Add basic tabs - Users tab will be added in updateTabsBasedOnUserRole()
         mainTabbedPane.addTab("Dashboard", dashboardPanel);
         mainTabbedPane.addTab("Tasks", taskListPanel);
+        mainTabbedPane.addTab("Calendar", calendarViewPanel);
         mainTabbedPane.addTab("Kanban Board", kanbanBoardPanel);
         mainTabbedPane.addTab("Pomodoro Timer", pomodoroTimerPanel);
         mainTabbedPane.addTab("Analytics", analyticsDashboardPanel);
+        mainTabbedPane.addTab("Leaderboard", leaderboardPanel);
         
         // Set initial tab tooltips
         mainTabbedPane.setToolTipTextAt(0, "View task statistics and overview");
         mainTabbedPane.setToolTipTextAt(1, "Manage and organize your tasks");
-        mainTabbedPane.setToolTipTextAt(2, "Drag and drop task management board");
-        mainTabbedPane.setToolTipTextAt(3, "Focus timer for productive work sessions");
-        mainTabbedPane.setToolTipTextAt(4, "Detailed analytics and productivity insights");
+        mainTabbedPane.setToolTipTextAt(2, "Monthly calendar view of tasks by due date");
+        mainTabbedPane.setToolTipTextAt(3, "Drag and drop task management board");
+        mainTabbedPane.setToolTipTextAt(4, "Focus timer for productive work sessions");
+        mainTabbedPane.setToolTipTextAt(5, "Detailed analytics and productivity insights");
+        mainTabbedPane.setToolTipTextAt(6, "User rankings and performance leaderboard");
         
         add(mainTabbedPane, BorderLayout.CENTER);
     }
@@ -371,6 +385,9 @@ public class WorkSphereGUI extends JFrame {
             if (taskListPanel != null) {
                 taskListPanel.setCurrentUser(currentUser);
             }
+            if (calendarViewPanel != null) {
+                calendarViewPanel.setCurrentUser(currentUser);
+            }
             if (kanbanBoardPanel != null) {
                 kanbanBoardPanel.setCurrentUser(currentUser);
             }
@@ -387,6 +404,9 @@ public class WorkSphereGUI extends JFrame {
         if (taskListPanel != null) {
             taskListPanel.refresh();
         }
+        if (calendarViewPanel != null) {
+            calendarViewPanel.refresh();
+        }
         if (kanbanBoardPanel != null) {
             kanbanBoardPanel.refresh();
         }
@@ -395,6 +415,9 @@ public class WorkSphereGUI extends JFrame {
         }
         if (analyticsDashboardPanel != null && currentUser != null) {
             analyticsDashboardPanel.refreshData();
+        }
+        if (leaderboardPanel != null) {
+            leaderboardPanel.refreshRankings();
         }
     }
     
@@ -407,7 +430,7 @@ public class WorkSphereGUI extends JFrame {
             return;
         }
         
-        TaskDialog taskDialog = new TaskDialog(this, taskService, userService, null);
+        TaskDialog taskDialog = new TaskDialog(this, taskService, userService, null, currentUser);
         taskDialog.setVisible(true);
         
         if (taskDialog.isTaskSaved()) {

@@ -16,22 +16,22 @@ import java.util.Optional;
 public class UserDAO {
     
     private static final String INSERT_USER = 
-        "INSERT INTO users (username, email, full_name, is_admin) VALUES (?, ?, ?, ?)";
+        "INSERT INTO users (username, password, email, full_name, is_admin) VALUES (?, ?, ?, ?, ?)";
     
     private static final String SELECT_USER_BY_ID = 
-        "SELECT id, username, email, full_name, is_admin, created_at, updated_at FROM users WHERE id = ?";
+        "SELECT id, username, password, email, full_name, is_admin, created_at, updated_at FROM users WHERE id = ?";
     
     private static final String SELECT_USER_BY_USERNAME = 
-        "SELECT id, username, email, full_name, is_admin, created_at, updated_at FROM users WHERE username = ?";
+        "SELECT id, username, password, email, full_name, is_admin, created_at, updated_at FROM users WHERE username = ?";
     
     private static final String SELECT_USER_BY_EMAIL = 
-        "SELECT id, username, email, full_name, is_admin, created_at, updated_at FROM users WHERE email = ?";
+        "SELECT id, username, password, email, full_name, is_admin, created_at, updated_at FROM users WHERE email = ?";
     
     private static final String SELECT_ALL_USERS = 
-        "SELECT id, username, email, full_name, is_admin, created_at, updated_at FROM users ORDER BY username";
+        "SELECT id, username, password, email, full_name, is_admin, created_at, updated_at FROM users ORDER BY username";
     
     private static final String UPDATE_USER = 
-        "UPDATE users SET username = ?, email = ?, full_name = ?, is_admin = ? WHERE id = ?";
+        "UPDATE users SET username = ?, password = ?, email = ?, full_name = ?, is_admin = ? WHERE id = ?";
     
     private static final String DELETE_USER = 
         "DELETE FROM users WHERE id = ?";
@@ -50,9 +50,10 @@ public class UserDAO {
              PreparedStatement statement = connection.prepareStatement(INSERT_USER, Statement.RETURN_GENERATED_KEYS)) {
             
             statement.setString(1, user.getUsername());
-            statement.setString(2, user.getEmail());
-            statement.setString(3, user.getFullName());
-            statement.setBoolean(4, user.isAdmin());
+            statement.setString(2, user.getPassword());
+            statement.setString(3, user.getEmail());
+            statement.setString(4, user.getFullName());
+            statement.setBoolean(5, user.isAdmin());
             
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0) {
@@ -165,10 +166,11 @@ public class UserDAO {
              PreparedStatement statement = connection.prepareStatement(UPDATE_USER)) {
             
             statement.setString(1, user.getUsername());
-            statement.setString(2, user.getEmail());
-            statement.setString(3, user.getFullName());
-            statement.setBoolean(4, user.isAdmin());
-            statement.setInt(5, user.getId());
+            statement.setString(2, user.getPassword());
+            statement.setString(3, user.getEmail());
+            statement.setString(4, user.getFullName());
+            statement.setBoolean(5, user.isAdmin());
+            statement.setInt(6, user.getId());
             
             return statement.executeUpdate() > 0;
         }
@@ -236,6 +238,7 @@ public class UserDAO {
         User user = new User();
         user.setId(resultSet.getInt("id"));
         user.setUsername(resultSet.getString("username"));
+        user.setPassword(resultSet.getString("password"));
         user.setEmail(resultSet.getString("email"));
         user.setFullName(resultSet.getString("full_name"));
         user.setAdmin(resultSet.getBoolean("is_admin"));

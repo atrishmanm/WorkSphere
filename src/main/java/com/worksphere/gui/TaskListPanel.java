@@ -93,7 +93,7 @@ public class TaskListPanel extends JPanel {
         filterPanel.setLayout(new BoxLayout(filterPanel, BoxLayout.Y_AXIS));
         filterPanel.setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(new Color(222, 226, 230)), 
-            "🔍 Search & Filter", 
+            "Search & Filter", 
             TitledBorder.LEFT, 
             TitledBorder.TOP, 
             new Font("Segoe UI", Font.BOLD, 16),
@@ -372,6 +372,10 @@ public class TaskListPanel extends JPanel {
         exportBtn.setToolTipText("Export task statistics");
         exportBtn.addActionListener(e -> exportTasks());
         
+        JButton importBtn = createStyledButton("Import CSV", new Color(255, 153, 51), Color.WHITE);
+        importBtn.setToolTipText("Bulk import tasks from CSV file");
+        importBtn.addActionListener(e -> importCSV());
+        
         // Add separator
         JSeparator separator = new JSeparator(SwingConstants.VERTICAL);
         separator.setPreferredSize(new Dimension(1, 30));
@@ -384,6 +388,7 @@ public class TaskListPanel extends JPanel {
         buttonPanel.add(Box.createHorizontalStrut(5));
         buttonPanel.add(refreshBtn);
         buttonPanel.add(exportBtn);
+        buttonPanel.add(importBtn);
         
         return buttonPanel;
     }
@@ -435,7 +440,8 @@ public class TaskListPanel extends JPanel {
                     mainFrame,
                     taskService,
                     userService,
-                    task
+                    task,
+                    currentUser
                 );
                 taskDialog.setVisible(true);
                 
@@ -501,6 +507,20 @@ public class TaskListPanel extends JPanel {
                     // No user logged in
                     tasks = new ArrayList<>();
                 }
+                
+                // Sort tasks by priority (URGENT -> HIGH -> MEDIUM -> LOW) then by ID
+                if (tasks != null) {
+                    tasks.sort((t1, t2) -> {
+                        // First compare by priority
+                        int priorityCompare = getPriorityValue(t1.getPriority()) - getPriorityValue(t2.getPriority());
+                        if (priorityCompare != 0) {
+                            return priorityCompare;
+                        }
+                        // If same priority, sort by ID
+                        return Integer.compare(t1.getId(), t2.getId());
+                    });
+                }
+                
                 updateTableData(tasks != null ? tasks : new ArrayList<>());
             } catch (Exception e) {
                 System.err.println("Error loading tasks: " + e.getMessage());
@@ -513,6 +533,17 @@ public class TaskListPanel extends JPanel {
                 updateTableData(new ArrayList<>());
             }
         });
+    }
+    
+    // Helper method to convert priority to numeric value for sorting
+    private int getPriorityValue(Priority priority) {
+        switch (priority) {
+            case URGENT: return 1;
+            case HIGH: return 2;
+            case MEDIUM: return 3;
+            case LOW: return 4;
+            default: return 5;
+        }
     }
     
     private void updateTableData(List<Task> tasks) {
@@ -693,7 +724,8 @@ public class TaskListPanel extends JPanel {
             SwingUtilities.getWindowAncestor(this), 
             taskService, 
             userService, 
-            null
+            null,
+            currentUser
         );
         taskDialog.setVisible(true);
         
@@ -712,7 +744,8 @@ public class TaskListPanel extends JPanel {
                     SwingUtilities.getWindowAncestor(this), 
                     taskService, 
                     userService, 
-                    task
+                    task,
+                    currentUser
                 );
                 taskDialog.setVisible(true);
                 
@@ -906,7 +939,7 @@ public class TaskListPanel extends JPanel {
             String stats = String.format(
                 "Task Statistics\n\n" +
                 "Total Tasks: %d\n" +
-                "📝 To-Do: %d\n" +
+                "To-Do: %d\n" +
                 "In Progress: %d\n" +
                 "Completed: %d\n\n" +
                 "Completion Rate: %.1f%%",
@@ -925,6 +958,15 @@ public class TaskListPanel extends JPanel {
                 "Error",
                 JOptionPane.ERROR_MESSAGE);
         }
+    }
+    
+    private void importCSV() {
+        CSVImportDialog dialog = new CSVImportDialog(
+            (Frame) SwingUtilities.getWindowAncestor(this),
+            currentUser,
+            this::refresh
+        );
+        dialog.setVisible(true);
     }
     
     public void refresh() {

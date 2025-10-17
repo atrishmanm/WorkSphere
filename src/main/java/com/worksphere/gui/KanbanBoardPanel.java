@@ -57,11 +57,11 @@ public class KanbanBoardPanel extends JPanel {
         headerPanel.setBackground(Color.WHITE);
         headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
         
-        JLabel titleLabel = new JLabel("📋 Kanban Board");
+        JLabel titleLabel = new JLabel("Kanban Board");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
         titleLabel.setForeground(new Color(70, 130, 180));
         
-        JButton refreshButton = new JButton("🔄 Refresh");
+        JButton refreshButton = new JButton("Refresh");
         refreshButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         refreshButton.setPreferredSize(new Dimension(120, 35));
         refreshButton.setBackground(new Color(108, 117, 125));
@@ -79,9 +79,9 @@ public class KanbanBoardPanel extends JPanel {
         boardPanel.setBackground(Color.WHITE);
         
         // Create columns
-        todoColumn = createKanbanColumn("📝 To-Do", new Color(108, 117, 125));
-        inProgressColumn = createKanbanColumn("🔄 In Progress", new Color(255, 193, 7));
-        completedColumn = createKanbanColumn("✅ Completed", new Color(40, 167, 69));
+        todoColumn = createKanbanColumn("To-Do", new Color(108, 117, 125));
+        inProgressColumn = createKanbanColumn("In Progress", new Color(255, 193, 7));
+        completedColumn = createKanbanColumn("Completed", new Color(40, 167, 69));
         
         boardPanel.add(todoColumn);
         boardPanel.add(inProgressColumn);
@@ -209,11 +209,11 @@ public class KanbanBoardPanel extends JPanel {
     
     private void updateColumnHeaders() {
         ((JLabel) todoColumn.getComponent(0)).setText(
-            String.format("📝 To-Do (%d)", todoModel.getSize()));
+            String.format("To-Do (%d)", todoModel.getSize()));
         ((JLabel) inProgressColumn.getComponent(0)).setText(
-            String.format("🔄 In Progress (%d)", inProgressModel.getSize()));
+            String.format("In Progress (%d)", inProgressModel.getSize()));
         ((JLabel) completedColumn.getComponent(0)).setText(
-            String.format("✅ Completed (%d)", completedModel.getSize()));
+            String.format("Completed (%d)", completedModel.getSize()));
     }
     
     /**
@@ -256,7 +256,7 @@ public class KanbanBoardPanel extends JPanel {
                 // Assignee (if not current user)
                 if (task.getAssignedTo() != null && 
                     (currentUser == null || !task.getAssignedTo().equals(currentUser.getId()))) {
-                    JLabel assigneeLabel = new JLabel("👤 " + getAssigneeName(task.getAssignedTo()));
+                    JLabel assigneeLabel = new JLabel("Assigned: " + getAssigneeName(task.getAssignedTo()));
                     assigneeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
                     assigneeLabel.setForeground(new Color(108, 117, 125));
                     
@@ -403,7 +403,8 @@ public class KanbanBoardPanel extends JPanel {
                 (JFrame) SwingUtilities.getWindowAncestor(this),
                 taskService,
                 userService,
-                task
+                task,
+                currentUser
             );
             dialog.setVisible(true);
             
