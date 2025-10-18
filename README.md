@@ -18,6 +18,48 @@ This software and its source code are the intellectual property of Atrishman. Co
 *Organize your tasks • Track progress • Boost productivity*
 
 [Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Contributing](#-contributing)
+[//]: # (Feature Badges)
+
+<div align="center">
+   <img src="https://img.shields.io/badge/Leaderboard-Enabled-blueviolet?style=for-the-badge" alt="Leaderboard"/>
+   <img src="https://img.shields.io/badge/Analytics-Dashboard-orange?style=for-the-badge" alt="Analytics Dashboard"/>
+   <img src="https://img.shields.io/badge/Pomodoro-Timer-red?style=for-the-badge" alt="Pomodoro Timer"/>
+   <img src="https://img.shields.io/badge/Recurring-Tasks-teal?style=for-the-badge" alt="Recurring Tasks"/>
+   <img src="https://img.shields.io/badge/CSV-Import/Export-yellow?style=for-the-badge" alt="CSV Import/Export"/>
+   <img src="https://img.shields.io/badge/Modern-UI/UX-ff69b4?style=for-the-badge" alt="Modern UI/UX"/>
+   <img src="https://img.shields.io/badge/Notifications-Enabled-9cf?style=for-the-badge" alt="Notifications"/>
+   <img src="https://img.shields.io/badge/Calendar-View-4caf50?style=for-the-badge" alt="Calendar View"/>
+   <img src="https://img.shields.io/badge/Task-Notes/Description-2196f3?style=for-the-badge" alt="Task Notes/Description"/>
+   <img src="https://img.shields.io/badge/Subtask-Checkboxes-607d8b?style=for-the-badge" alt="Subtask Checkboxes"/>
+   <img src="https://img.shields.io/badge/Predictive-Analytics-ff9800?style=for-the-badge" alt="Predictive Analytics"/>
+   <img src="https://img.shields.io/badge/Push-Notifications-00bcd4?style=for-the-badge" alt="Push Notifications"/>
+   <img src="https://img.shields.io/badge/Task-History-795548?style=for-the-badge" alt="Task History"/>
+</div>
+[//]: # (Feature Summary Table)
+
+---
+
+## 🗂️ Feature Summary Table
+
+| Feature                | Description                                                                                 |
+|------------------------|---------------------------------------------------------------------------------------------|
+| Calendar View          | Visualize tasks/events in a monthly calendar, color-coded deadlines, click to edit/add      |
+| Task Notes & Subtasks  | Rich notes, subtask checkboxes, progress bar                                                |
+| Predictive Analytics   | Deadline prediction, visual alerts for at-risk tasks                                       |
+| Push Notifications     | Desktop notifications for deadlines, assignments, overdue tasks                            |
+| Task History           | Audit log of edits, status changes, assignments, completions                               |
+| Task Management        | Create, edit, delete, assign, track status, priority, due dates, recurring tasks, subtasks  |
+| Task Views & Filtering | Table/Kanban, filter/search by status, priority, category, tags, assignee, due date         |
+| User Management        | Create users, authentication, roles, validation                                             |
+| Leaderboard            | Top performers, rankings, points, badges, team analytics                                   |
+| Analytics Dashboard    | Productivity metrics, charts, insights, export analytics                                   |
+| Pomodoro Timer         | Integrated timer, customizable intervals, notifications, cycle tracking                     |
+| CSV Import/Export      | Bulk import/export tasks with all details                                                   |
+| Modern UI/UX           | FlatLaf theming, gradients, rounded corners, animations, dark/light mode                   |
+| Notifications          | Desktop/sound alerts for overdue tasks, assignments, Pomodoro, deadline risks              |
+| Dashboard & Statistics | Task statistics, visual indicators, user-friendly CLI                                      |
+
+---
 
 </div>
 
@@ -37,19 +79,89 @@ WorkSphere is a comprehensive task management application built with Java and SQ
 - **Extensible** - Clean architecture ready for web UI integration
 
 ## ✨ Features
+### Calendar View
+- ✅ **Calendar view panel** - visualize all tasks, deadlines, and events in a monthly calendar
+- ✅ **Click on a date** to see tasks due, add new tasks, or edit existing ones
+- ✅ **Color-coded deadlines** and overdue indicators
+
+### Task Notes & Subtasks
+- ✅ **Task notes/description** - add rich notes to each task
+- ✅ **Subtask checkboxes** - check off subtasks as completed directly inside the task dialog
+- ✅ **Progress bar** for subtasks completion
+
+### Predictive Analytics
+- ✅ **Deadline prediction** - "At current pace, you'll miss deadline by X days"
+- ✅ **Visual alerts** for at-risk tasks and projects
+
+### Push Notifications
+- ✅ **Desktop notifications** for upcoming deadlines, overdue tasks, and assignments
+- ✅ **Real-time alerts** for critical events
+
+### Task History
+- ✅ **Task history tracking** - see who changed what and when for every task
+- ✅ **Detailed audit log** for edits, status changes, assignments, and completions
 
 ### Task Management
-- ✅ **Create tasks** with title, description, priority, and due date
-- ✅ **Edit tasks** - update title, description, priority, due date
+
+### Task Management
+- ✅ **Create tasks** with title, description, priority, due date, category, tags, and subtasks
+- ✅ **Edit tasks** - update all fields, including subtasks and recurrence
 - ✅ **Delete tasks** - remove tasks from the system
 - ✅ **Assign tasks** to users
 - ✅ **Task status tracking** - To-Do, In Progress, Completed
 - ✅ **Priority levels** - Low, Medium, High, Urgent
 - ✅ **Due date management** with overdue detection
+- ✅ **Recurring tasks** - set up tasks that repeat on custom schedules
+- ✅ **Subtasks** - break down tasks into actionable items
+- ✅ **Task history** - view changes and progress over time
 
-### Task Views
-- ✅ **View all tasks** in a formatted table
+### Task Views & Filtering
+- ✅ **View all tasks** in a formatted table or Kanban board
 - ✅ **Filter by status** (To-Do, In Progress, Completed)
+- ✅ **Filter by priority** (Low, Medium, High, Urgent)
+- ✅ **Filter by category, tags, assignee, and due date**
+- ✅ **Search tasks** by title, description, or tags
+- ✅ **View assigned tasks** for a specific user
+- ✅ **View overdue tasks** with alerts and notifications
+- ✅ **Detailed task view** with complete information
+
+### User Management
+- ✅ **Create users** with username, email, and full name
+- ✅ **User authentication** via username login
+- ✅ **List all users** in the system
+- ✅ **Input validation** for user data
+- ✅ **User roles** - admin and regular users with different permissions
+
+### Leaderboard & Gamification
+- ✅ **Leaderboard panel** - see top performers by completed tasks, productivity, and streaks
+- ✅ **User rankings** - motivate users with points and badges
+- ✅ **Team performance analytics**
+
+### Analytics Dashboard
+- ✅ **Productivity metrics** - total/completed tasks, completion rate, overdue analysis
+- ✅ **Visual charts** - completion trends, priority distribution, team performance, time accuracy
+- ✅ **Insights** - deadline risk prediction, overdue alerts, time efficiency
+- ✅ **Export analytics** - save charts and metrics
+
+### Pomodoro Timer
+- ✅ **Integrated Pomodoro timer** for focused work sessions
+- ✅ **Customizable work/break intervals**
+- ✅ **Task selection** - link timer to specific tasks
+- ✅ **Cycle tracking** and notifications
+
+### CSV Import/Export
+- ✅ **Import tasks from CSV** - bulk add tasks with all details
+- ✅ **Export tasks to CSV** - backup or share your data
+
+### Modern UI/UX
+- ✅ **Beautiful, modern interface** with FlatLaf theming, gradients, rounded corners, and smooth animations
+- ✅ **Responsive dialogs, panels, and charts**
+- ✅ **Dark/light mode support**
+
+### Notifications
+- ✅ **Desktop notifications** for overdue tasks, new assignments, and deadline risks
+- ✅ **Sound alerts** for Pomodoro and important events
+
 - ✅ **Filter by priority** (Low, Medium, High, Urgent)
 - ✅ **View assigned tasks** for a specific user
 - ✅ **View overdue tasks** with alerts
