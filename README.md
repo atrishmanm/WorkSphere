@@ -1,7 +1,3 @@
-# IMPORTANT NOTICE
-
-This software and its source code are the intellectual property of Atrishman. Copying, modifying, publishing, or redistributing any part of this codebase is strictly prohibited without explicit written permission. See LICENSE for details.
-
 
 # WorkSphere - Task Management System
 
@@ -484,10 +480,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 
 ---
+# IMPORTANT NOTICE
+
+This software and its source code are the intellectual property of Atrishman. Copying, modifying, publishing, or redistributing any part of this codebase is strictly prohibited without explicit written permission. See LICENSE for details.
+
 
 <div align="center">
 
-**Built with ❤️ by [Atrishman Mukherjee](https://github.com/atrishmanm),[Arnav Gupta](https://github.com/arnav182006),[Divyanshu Kant](https://github.com/Astern-ops)**
+**Built with ❤️ by [Atrishman Mukherjee](https://github.com/atrishmanm), [Arnav Gupta](https://github.com/arnav182006), [Divyanshu Kant](https://github.com/Astern-ops)**
 
 ⭐ **Star this repository if you find it helpful!** ⭐
 
