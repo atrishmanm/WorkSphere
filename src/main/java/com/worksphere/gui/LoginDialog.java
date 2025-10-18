@@ -24,7 +24,6 @@ public class LoginDialog extends JDialog {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JButton loginButton;
-    private JButton createUserButton;
     private JButton exitButton;
     
     public LoginDialog(Frame parent, UserService userService) {
@@ -37,7 +36,7 @@ public class LoginDialog extends JDialog {
     }
     
     private void initializeDialog() {
-        setSize(400, 300);
+    setSize(400, 340); // Increased vertical height
         setLocationRelativeTo(getParent());
         setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         setResizable(false);
@@ -106,15 +105,11 @@ public class LoginDialog extends JDialog {
         loginButton = new JButton("Login");
         loginButton.setPreferredSize(new Dimension(80, 30));
         
-        createUserButton = new JButton("Create User");
-        createUserButton.setPreferredSize(new Dimension(100, 30));
+    exitButton = new JButton("Exit");
+    exitButton.setPreferredSize(new Dimension(80, 30));
         
-        exitButton = new JButton("Exit");
-        exitButton.setPreferredSize(new Dimension(80, 30));
-        
-        buttonPanel.add(loginButton);
-        buttonPanel.add(createUserButton);
-        buttonPanel.add(exitButton);
+    buttonPanel.add(loginButton);
+    buttonPanel.add(exitButton);
         
         // Add components with spacing
         mainPanel.add(usernameLabel);
@@ -129,17 +124,7 @@ public class LoginDialog extends JDialog {
         
         add(mainPanel, BorderLayout.CENTER);
         
-        // Info panel
-        JPanel infoPanel = new JPanel();
-        infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-        
-        JLabel infoLabel = new JLabel("<html><center>Tip: Try username: <b>admin</b> / password: <b>admin123</b><br/>Or create a new user</center></html>");
-        infoLabel.setFont(new Font("Arial", Font.PLAIN, 11));
-        infoLabel.setForeground(Color.GRAY);
-        infoLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        
-        infoPanel.add(infoLabel);
-        add(infoPanel, BorderLayout.SOUTH);
+    // Info panel removed as per request
     }
     
     private void setupEventHandlers() {
@@ -151,13 +136,6 @@ public class LoginDialog extends JDialog {
             }
         });
         
-        // Create user button action
-        createUserButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showCreateUserDialog();
-            }
-        });
         
         // Exit button action
         exitButton.addActionListener(new ActionListener() {
@@ -252,20 +230,6 @@ public class LoginDialog extends JDialog {
         }
     }
     
-    private void showCreateUserDialog() {
-        CreateUserDialog createUserDialog = new CreateUserDialog(this, userService);
-        createUserDialog.setVisible(true);
-        
-        if (createUserDialog.isUserCreated()) {
-            User newUser = createUserDialog.getCreatedUser();
-            usernameField.setText(newUser.getUsername());
-            
-            JOptionPane.showMessageDialog(this,
-                "User '" + newUser.getUsername() + "' created successfully!\nYou can now login.",
-                "User Created",
-                JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
     
     public boolean isLoginSuccessful() {
         return loginSuccessful;

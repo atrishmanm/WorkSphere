@@ -98,7 +98,7 @@ public class TaskDialog extends JDialog {
         headerPanel.setBackground(new Color(70, 130, 180));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
         
-        String headerText = task == null ? "📝 Create New Task" : "✏️ Edit Task";
+        String headerText = task == null ? " Create New Task" : " Edit Task";
         JLabel titleLabel = new JLabel(headerText);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         titleLabel.setForeground(Color.WHITE);

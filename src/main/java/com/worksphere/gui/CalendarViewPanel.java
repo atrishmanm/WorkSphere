@@ -220,8 +220,15 @@ public class CalendarViewPanel extends JPanel {
         
         // Safety check: ensure currentUser is not null
         if (currentUser == null) {
-            System.err.println("CalendarViewPanel: currentUser is null, cannot load tasks");
-            renderCalendar(); // Render empty calendar
+            // Overlay friendly message on top of calendar
+            calendarGrid.removeAll();
+            JLabel messageLabel = new JLabel("No user logged in. Please login to view your calendar.", SwingConstants.CENTER);
+            messageLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            messageLabel.setForeground(Color.RED);
+            calendarGrid.setLayout(new BorderLayout());
+            calendarGrid.add(messageLabel, BorderLayout.CENTER);
+            calendarGrid.revalidate();
+            calendarGrid.repaint();
             return;
         }
         
@@ -254,7 +261,9 @@ public class CalendarViewPanel extends JPanel {
     }
     
     private void renderCalendar() {
-        calendarGrid.removeAll();
+    // Restore calendar grid layout before rendering
+    calendarGrid.removeAll();
+    calendarGrid.setLayout(new GridLayout(6, 7, 1, 1));
         
         LocalDate firstDayOfMonth = currentMonth.atDay(1);
         int dayOfWeek = firstDayOfMonth.getDayOfWeek().getValue() % 7; // 0=Sunday, 6=Saturday
