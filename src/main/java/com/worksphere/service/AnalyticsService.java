@@ -1,3 +1,4 @@
+
 package com.worksphere.service;
 
 import com.worksphere.dao.TaskDAO;
@@ -18,6 +19,55 @@ import java.util.stream.Collectors;
  * Service for generating comprehensive task analytics and productivity metrics
  */
 public class AnalyticsService {
+    // --- Predictive Analytics for Deadlines ---
+    public DeadlinePrediction getDeadlinePrediction(LocalDate startDate, LocalDate endDate) throws SQLException {
+        List<Task> allTasks = taskDAO.findAll();
+        List<Task> filteredTasks = filterTasksByDateRange(allTasks, startDate, endDate);
+
+        // Only consider tasks with due dates in range
+        List<Task> tasksWithDue = filteredTasks.stream()
+            .filter(t -> t.getDueDate() != null && t.getStatus() != TaskStatus.COMPLETED)
+            .collect(Collectors.toList());
+        if (tasksWithDue.isEmpty()) return null;
+
+        // Find latest due date
+        LocalDate latestDue = tasksWithDue.stream()
+            .map(Task::getDueDate)
+            .max(LocalDate::compareTo)
+            .orElse(null);
+        if (latestDue == null) return null;
+
+        // Calculate completion rate (tasks per day)
+        long completed = filteredTasks.stream().filter(t -> t.getStatus() == TaskStatus.COMPLETED).count();
+        long total = filteredTasks.size();
+        if (total == 0) return null;
+
+        long days = ChronoUnit.DAYS.between(startDate, LocalDate.now());
+        if (days < 1) days = 1;
+        double completionRate = (double) completed / days;
+        if (completionRate == 0) return null;
+
+        int remaining = (int) tasksWithDue.size();
+        long daysNeeded = (long) Math.ceil(remaining / completionRate);
+        LocalDate expectedCompletion = LocalDate.now().plusDays(daysNeeded);
+
+        if (expectedCompletion.isAfter(latestDue)) {
+            DeadlinePrediction prediction = new DeadlinePrediction();
+            prediction.atRisk = true;
+            prediction.expectedCompletion = expectedCompletion;
+            prediction.latestDueDate = latestDue;
+            prediction.daysLate = ChronoUnit.DAYS.between(latestDue, expectedCompletion);
+            return prediction;
+        }
+        return null;
+    }
+
+    public static class DeadlinePrediction {
+        public boolean atRisk;
+        public LocalDate expectedCompletion;
+        public LocalDate latestDueDate;
+        public long daysLate;
+    }
     private final TaskDAO taskDAO;
     private final CategoryDAO categoryDAO;
     
@@ -326,4 +376,5 @@ public class AnalyticsService {
         public double completionRate;
         public int totalTimeSpent;
     }
+    // Package-private static inner class for deadline prediction result
 }

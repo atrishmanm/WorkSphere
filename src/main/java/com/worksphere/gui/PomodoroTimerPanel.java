@@ -10,6 +10,7 @@ import com.worksphere.service.SearchService;
 
 import javax.swing.*;
 import java.awt.*;
+import com.worksphere.util.NotificationUtil;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -414,40 +415,11 @@ public class PomodoroTimerPanel extends JPanel implements PomodoroListener {
     }
     
     private void showNotification(String title, String message) {
-        // Simple notification using system tray if available
-        if (SystemTray.isSupported()) {
-            try {
-                SystemTray tray = SystemTray.getSystemTray();
-                
-                // Create tray icon (you might want to use a custom icon)
-                Image image = Toolkit.getDefaultToolkit().createImage("");
-                TrayIcon trayIcon = new TrayIcon(image, "WorkSphere Pomodoro");
-                trayIcon.setImageAutoSize(true);
-                
-                tray.add(trayIcon);
-                trayIcon.displayMessage(title, message, TrayIcon.MessageType.INFO);
-                
-                // Remove the icon after showing notification
-                Timer timer = new Timer(3000, e -> tray.remove(trayIcon));
-                timer.setRepeats(false);
-                timer.start();
-                
-            } catch (Exception e) {
-                // Fallback to dialog
-                showDialogNotification(title, message);
-            }
-        } else {
-            showDialogNotification(title, message);
-        }
+        NotificationUtil.showNotification(this, title, message);
     }
-    
-    private void showDialogNotification(String title, String message) {
-        JOptionPane.showMessageDialog(this, message, title, JOptionPane.INFORMATION_MESSAGE);
-    }
-    
+
     private void playNotificationSound() {
-        // Simple beep sound
-        Toolkit.getDefaultToolkit().beep();
+        NotificationUtil.playNotificationSound();
     }
     
     /**

@@ -35,8 +35,19 @@ echo.
 echo Build successful! Running WorkSphere...
 echo.
 
-REM Run the standalone JAR
-java -jar target\worksphere-1.0.0.jar
+REM Check if JAR file exists
+if not exist target\worksphere-1.0.0.jar (
+    echo ERROR: JAR file not found at target\worksphere-1.0.0.jar
+    echo Build may have failed or JAR name is different.
+    pause
+    exit /b 1
+)
+
+
+REM Run the standalone JAR in GUI mode (no output redirection)
+echo Starting Java application...
+call java -jar target\worksphere-1.0.0.jar gui
+echo Java process exited with code %errorlevel%.
 
 if %errorlevel% neq 0 (
     echo.
@@ -47,5 +58,5 @@ if %errorlevel% neq 0 (
 )
 
 echo.
-echo Application closed.
+echo Application closed. See run-jar.log for details.
 pause

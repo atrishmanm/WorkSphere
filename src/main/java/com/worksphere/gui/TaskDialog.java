@@ -938,8 +938,11 @@ public class TaskDialog extends JDialog {
     public boolean isTaskSaved() {
         return taskSaved;
     }
-    
-    public Task getTask() {
-        return task;
+
+    /**
+     * Returns the saved Task after dialog closes (if saved), otherwise null.
+     */
+    public Task getSavedTask() {
+        return taskSaved ? task : null;
     }
 }

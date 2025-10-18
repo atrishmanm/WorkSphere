@@ -1,3 +1,5 @@
+// Copyright (c) 2025 Atrishman. All rights reserved.
+// Copying, modifying, or publishing this code is strictly prohibited without written permission. See LICENSE.
 package com.worksphere;
 
 import com.formdev.flatlaf.FlatLightLaf;

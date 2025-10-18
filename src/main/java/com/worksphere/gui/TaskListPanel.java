@@ -1,3 +1,5 @@
+// Copyright (c) 2025 Atrishman. All rights reserved.
+// Copying, modifying, or publishing this code is strictly prohibited without written permission. See LICENSE.
 package com.worksphere.gui;
 
 import com.worksphere.model.Priority;
@@ -6,6 +8,7 @@ import com.worksphere.model.TaskStatus;
 import com.worksphere.model.User;
 import com.worksphere.model.Category;
 import com.worksphere.service.TaskService;
+import com.worksphere.util.NotificationUtil;
 import com.worksphere.service.UserService;
 import com.worksphere.service.SearchService;
 import com.worksphere.dao.CategoryDAO;
@@ -647,10 +650,9 @@ public class TaskListPanel extends JPanel {
             Category selectedCategory = (Category) categoryFilter.getSelectedItem();
             String searchText = searchField.getText().trim();
             String tagText = tagFilter.getText().trim();
-            
+
             // Use SearchService for advanced filtering
             SearchService.TaskFilterCriteria criteria = new SearchService.TaskFilterCriteria();
-            
             if (selectedStatus != null) {
                 criteria.setStatuses(List.of(selectedStatus));
             }
@@ -663,44 +665,60 @@ public class TaskListPanel extends JPanel {
             if (!searchText.isEmpty()) {
                 criteria.setSearchText(searchText);
             }
-            
-            List<Task> filteredTasks;
-            if (!searchText.isEmpty()) {
-                // Use text search if search text is provided
-                filteredTasks = searchService.searchTasks(searchText);
+
+            List<Task> baseTasks;
+            if (currentUser != null && currentUser.isAdmin()) {
+                // Admin: can see all tasks
+                baseTasks = taskService.getAllTasks();
+            } else if (currentUser != null) {
+                // Non-admin: only see assigned/created tasks
+                baseTasks = taskService.getTasksForUser(currentUser.getId());
             } else {
-                // Get all tasks and filter
-                filteredTasks = taskService.getAllTasks();
+                baseTasks = new ArrayList<>();
             }
-            
-            // Apply criteria filters
-            filteredTasks = searchService.filterTasks(criteria);
-            
+
+            List<Task> filteredTasks = baseTasks;
+
+            // Precompute search and filter results to avoid checked exceptions in lambdas
+            List<Task> searchResults = null;
+            List<Task> filterResults = null;
+            if (!searchText.isEmpty()) {
+                searchResults = searchService.searchTasks(searchText);
+                filteredTasks = filteredTasks.stream()
+                    .filter(searchResults::contains)
+                    .collect(Collectors.toList());
+            }
+
+            filterResults = searchService.filterTasks(criteria);
+            filteredTasks = filteredTasks.stream()
+                .filter(filterResults::contains)
+                .collect(Collectors.toList());
+
             // Apply user filter manually (since it's by username, not ID)
             if (selectedUser != null && !selectedUser.equals("All Users")) {
                 filteredTasks = filteredTasks.stream()
-                    .filter(task -> task.getAssignedToUsername() != null && 
+                    .filter(task -> task.getAssignedToUsername() != null &&
                                    task.getAssignedToUsername().equals(selectedUser))
                     .collect(Collectors.toList());
             }
-            
-            // Apply tag filter manually 
+
+            // Apply tag filter manually
             if (!tagText.isEmpty()) {
                 String[] tags = tagText.split(",");
                 List<String> tagList = Arrays.stream(tags)
                     .map(String::trim)
                     .map(String::toLowerCase)
                     .collect(Collectors.toList());
-                
+
                 filteredTasks = filteredTasks.stream()
-                    .filter(task -> task.getTags() != null && 
+                    .filter(task -> task.getTags() != null &&
                                    task.getTags().stream()
                                        .anyMatch(tag -> tagList.contains(tag.toLowerCase())))
                     .collect(Collectors.toList());
             }
-                
+
             updateTableData(filteredTasks);
-            
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
                 "Error applying filters: " + e.getMessage(),
@@ -728,9 +746,14 @@ public class TaskListPanel extends JPanel {
             currentUser
         );
         taskDialog.setVisible(true);
-        
+
         if (taskDialog.isTaskSaved()) {
+            Task newTask = taskDialog.getSavedTask();
             refresh();
+            // Notify if the current user is assigned to the new task
+            if (newTask != null && newTask.getAssignedTo() != null && currentUser != null && newTask.getAssignedTo().equals(currentUser.getId())) {
+                NotificationUtil.showNotification(this, "New Assignment", "You have been assigned a new task: " + newTask.getTitle());
+            }
         }
     }
     

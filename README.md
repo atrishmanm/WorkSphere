@@ -1,3 +1,7 @@
+# IMPORTANT NOTICE
+
+This software and its source code are the intellectual property of Atrishman. Copying, modifying, publishing, or redistributing any part of this codebase is strictly prohibited without explicit written permission. See LICENSE for details.
+
 
 # WorkSphere - Task Management System
 

@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import com.worksphere.util.NotificationUtil;
 
 /**
  * Analytics Dashboard Panel for displaying productivity metrics and charts
@@ -589,7 +590,24 @@ public class AnalyticsDashboardPanel extends JPanel {
     
     private void updateInsights(ProductivityMetrics metrics, OverdueAnalysis overdueAnalysis) {
         StringBuilder insights = new StringBuilder();
-        
+        try {
+            LocalDate[] dateRange = getSelectedDateRange();
+            DeadlinePrediction prediction = analyticsService.getDeadlinePrediction(dateRange[0], dateRange[1]);
+            if (prediction != null && prediction.atRisk) {
+                insights.append(" At risk of missing deadline(s)! Expected completion: ")
+                       .append(prediction.expectedCompletion)
+                       .append(". Latest due: ")
+                       .append(prediction.latestDueDate)
+                       .append(". Estimated days late: ")
+                       .append(prediction.daysLate)
+                       .append(".\n\n");
+                // Show desktop notification for deadline risk
+                NotificationUtil.showNotification(this, "Deadline Risk Alert", "At risk of missing deadline(s)!\nLatest due: " + prediction.latestDueDate + "\nExpected completion: " + prediction.expectedCompletion);
+            }
+        } catch (Exception e) {
+            // Ignore prediction errors, don't block insights
+        }
+
         // Completion rate insight
         if (metrics.completionRate >= 0.8) {
             insights.append("Excellent completion rate of ")
@@ -611,6 +629,8 @@ public class AnalyticsDashboardPanel extends JPanel {
                    .append(" overdue tasks need attention (avg ")
                    .append(String.format("%.1f", overdueAnalysis.averageOverdueDays))
                    .append(" days overdue).\n\n");
+            // Show desktop notification for overdue tasks
+            NotificationUtil.showNotification(this, "Overdue Tasks Alert", overdueAnalysis.overdueTasks + " tasks are overdue! Avg " + String.format("%.1f", overdueAnalysis.averageOverdueDays) + " days overdue.");
         } else {
             insights.append("No overdue tasks! Great time management.\n\n");
         }
