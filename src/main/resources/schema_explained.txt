@@ -1,10 +1,9 @@
--- SQLite Database Schema
--- SQLite database file will be created automatically
+-- SQLite Database Schema for WorkSphere: Full Code and Explanation
 
--- Enable foreign key constraints (SQLite default is OFF)
 PRAGMA foreign_keys = ON;
+# Enables foreign key constraints in SQLite, ensuring referential integrity between tables.
 
--- Users table
+-- USERS TABLE
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
@@ -15,8 +14,9 @@ CREATE TABLE IF NOT EXISTS users (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+# Stores user accounts. Each user has a unique username and email, a password, full name, admin flag, and timestamps for creation and updates.
 
--- Tasks table with enhanced features
+-- TASKS TABLE
 CREATE TABLE IF NOT EXISTS tasks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
@@ -28,7 +28,6 @@ CREATE TABLE IF NOT EXISTS tasks (
     created_by INTEGER NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    -- Enhanced fields for analytics and features
     completed_at DATETIME,
     estimated_minutes INTEGER DEFAULT 0,
     actual_minutes INTEGER DEFAULT 0,
@@ -41,8 +40,9 @@ CREATE TABLE IF NOT EXISTS tasks (
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL,
     FOREIGN KEY (parent_task_id) REFERENCES tasks(id) ON DELETE SET NULL
 );
+# Main table for tasks. Includes title, description, priority, status, due date, assignment, creator, timestamps, analytics fields, category, recurrence, parent task, and last worked time. Foreign keys link to users, categories, and parent tasks.
 
--- Categories table for task organization
+-- CATEGORIES TABLE
 CREATE TABLE IF NOT EXISTS categories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT UNIQUE NOT NULL,
@@ -51,8 +51,9 @@ CREATE TABLE IF NOT EXISTS categories (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+# Organizes tasks into categories. Each category has a unique name, description, color, and timestamps.
 
--- Task tags table (many-to-many relationship)
+-- TASK TAGS TABLE
 CREATE TABLE IF NOT EXISTS task_tags (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     task_id INTEGER NOT NULL,
@@ -61,8 +62,9 @@ CREATE TABLE IF NOT EXISTS task_tags (
     FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
     UNIQUE(task_id, tag_name)
 );
+# Many-to-many relationship for tags on tasks. Each tag is linked to a task, and the combination must be unique.
 
--- Time logs table for detailed time tracking
+-- TIME LOGS TABLE
 CREATE TABLE IF NOT EXISTS time_logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     task_id INTEGER NOT NULL,
@@ -75,8 +77,9 @@ CREATE TABLE IF NOT EXISTS time_logs (
     FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+# Tracks time spent on tasks by users. Records start/end times, minutes, description, and links to tasks and users.
 
--- Subtasks table for checklist items within tasks
+-- SUBTASKS TABLE
 CREATE TABLE IF NOT EXISTS subtasks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     task_id INTEGER NOT NULL,
@@ -87,8 +90,9 @@ CREATE TABLE IF NOT EXISTS subtasks (
     completed_at DATETIME,
     FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
 );
+# Checklist items within tasks. Each subtask has a title, completion status, order, timestamps, and links to its parent task.
 
--- Task history table for tracking all changes
+-- TASK HISTORY TABLE
 CREATE TABLE IF NOT EXISTS task_history (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     task_id INTEGER NOT NULL,
@@ -101,8 +105,9 @@ CREATE TABLE IF NOT EXISTS task_history (
     FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+# Audit log for all changes to tasks. Records who made the change, what was changed, old/new values, and when.
 
--- Create indexes for better performance
+-- INDEXES FOR PERFORMANCE
 CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status);
 CREATE INDEX IF NOT EXISTS idx_tasks_priority ON tasks(priority);
 CREATE INDEX IF NOT EXISTS idx_tasks_assigned_to ON tasks(assigned_to);
@@ -121,8 +126,9 @@ CREATE INDEX IF NOT EXISTS idx_subtasks_completed ON subtasks(completed);
 CREATE INDEX IF NOT EXISTS idx_task_history_task_id ON task_history(task_id);
 CREATE INDEX IF NOT EXISTS idx_task_history_user_id ON task_history(user_id);
 CREATE INDEX IF NOT EXISTS idx_task_history_timestamp ON task_history(timestamp);
+# These indexes speed up queries for filtering, searching, and reporting on tasks, tags, time logs, subtasks, and history.
 
--- Insert default categories
+-- DEFAULT CATEGORIES
 INSERT OR IGNORE INTO categories (name, description, color) VALUES 
 ('Work', 'Work-related tasks', '#FF6B35'),
 ('Personal', 'Personal tasks and activities', '#4ECDC4'),
@@ -130,9 +136,9 @@ INSERT OR IGNORE INTO categories (name, description, color) VALUES
 ('Health', 'Health and wellness activities', '#96CEB4'),
 ('Finance', 'Financial planning and tasks', '#FFEAA7'),
 ('Home', 'Household and maintenance tasks', '#DDA0DD');
+# Pre-populates the categories table with common types for quick organization.
 
--- Insert sample users (will be handled by migration)
--- These inserts are moved to migration logic to handle existing databases
+# Sample users and tasks are handled by migration logic, not in schema.sql, to avoid duplicate data.
+# This keeps the schema clean and prevents conflicts when updating or migrating the database.
 
--- Sample tasks are now handled in migration logic to prevent duplicates
--- INSERT statements removed from schema.sql to avoid conflicts with migration-based sample data
+-- End of schema and explanations
